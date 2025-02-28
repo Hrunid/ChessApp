@@ -15,8 +15,8 @@ class Pawn : public Piece{
         bool canEnPassant(int dx);
     public:
         Pawn(int id, bool isWhite, Position currentPosition, Board& board, Game& game);
-        void calculateAvailableMoves() override;
         void scanForPin(Position startPosition, int dx, int dy) override;
+        void findMovesInDirection(std::pair<int, int> direction) override;
 };
 
 #endif
