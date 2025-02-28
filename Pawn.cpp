@@ -12,65 +12,62 @@ Move& Pawn::getLastMove(){
     return game.getLastMove();
 }
 
-void Pawn::calculateAvailableMoves(){
-    availableMoves.clear();
-    int x = currentPosition.x;
-    int y = currentPosition.y;
-    int dy = moveDirections[0].second;
+void Pawn::findMovesInDirection(std::pair<int, int> direction){
+    if(direction.first == 0){
+        int x = currentPosition.x;
+        int y = currentPosition.y;
+        int dy = direction.second;
 
-    Position tempPosition(x, y + dy);
-    if(isOnBoard(tempPosition)){
-        if(board.isSquareEmpty(tempPosition)){
-            availableMoves.push_back(tempPosition);
-            if(!hasMoved){
-                tempPosition = Position(tempPosition.x, tempPosition.y + dy);
-                if(isOnBoard(tempPosition) && board.isSquareEmpty(tempPosition)){
-                    availableMoves.push_back(tempPosition);
-                }
-                else{
-                    seenBlockedSquares.push_back(tempPosition);
-                }
-            }
-        }
-        else{
-            seenBlockedSquares.push_back(tempPosition);
-        }
-    }
-
-    for(int i = 1; i < 3; i++){
-        x = currentPosition.x;
-        y = currentPosition.y;
-        int dx = moveDirections[i].first;
-        int dy = moveDirections[i].second;
-        x += dx;
-        y += dy;
-
-        Position tempPosition(x, y);
-
-        if(isOnBoard(tempPosition)){
+        Position tempPosition(x, y + dy);
+        if(board.isOnBoard(tempPosition)){
             if(board.isSquareEmpty(tempPosition)){
-                if(canEnPassant(dx)){
-                    availableMoves.push_back(tempPosition);
+                availableMoves.push_back(tempPosition);
+                if(!hasMoved){
+                    tempPosition = Position(tempPosition.x, tempPosition.y + dy);
+                    if(board.isOnBoard(tempPosition) && board.isSquareEmpty(tempPosition)){
+                        availableMoves.push_back(tempPosition);
+                    }
+                    else{
+                        seenBlockedSquares.push_back(tempPosition);
+                    }
                 }
-                else{
-                    seenBlockedSquares.push_back(tempPosition);
-                }
-            }
-            else if(board.getPieceById(getPieceIdAtPosition(tempPosition)).isPieceWhite() == isWhite){
-                seenBlockedSquares.push_back(tempPosition);
             }
             else{
-                availableMoves.push_back(tempPosition);
+                seenBlockedSquares.push_back(tempPosition);
             }
         }
 
-
     }
-
-
-
+    else{
+            int x = currentPosition.x;
+            int y = currentPosition.y;
+            int dx = direction.first;
+            int dy = direction.second;
+            x += dx;
+            y += dy;
+    
+            Position tempPosition(x, y);
+    
+            if(board.isOnBoard(tempPosition)){
+                if(board.isSquareEmpty(tempPosition)){
+                    if(canEnPassant(dx)){
+                        availableMoves.push_back(tempPosition);
+                    }
+                    else{
+                        seenBlockedSquares.push_back(tempPosition);
+                    }
+                }
+                else if(board.getPieceById(getPieceIdAtPosition(tempPosition)).isPieceWhite() == isWhite){
+                    seenBlockedSquares.push_back(tempPosition);
+                }
+                else{
+                    availableMoves.push_back(tempPosition);
+                }
+            }
     
     
+        
+    }
 }
 
 void Pawn::scanForPin(Position startPosition, int dx, int dy){}
