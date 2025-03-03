@@ -30,6 +30,7 @@ class Board{
         void removePieceFromSquares(int pieceId);
         void addPieceToSquares(int pieceId);
         void capture(Position pieceToCapturePosition);
+        void createPiece(int id, char type, bool isWhite, Position pos, Board& board);
         
     public:
         Board(Player& whitePlayer, Player& blackPlayer);
