@@ -32,25 +32,10 @@ void Board::makeMove(const Move& move){
 
         getSquareAtPosition(from).setCurrentPiece(-1);
         getSquareAtPosition(to).setCurrentPiece(pieceId);
-        
-
-        for(int pieceId : piecesWithAccesFrom){
-            removePieceFromSquares(pieceId);
-        }
-        for(int pieceId : piecesWithAccesTo){
-            removePieceFromSquares(pieceId);
-        }
 
         updatePieces(piecesWithAccesFrom);
         updatePieces(piecesWithAccesTo);
 
-        
-        for(int pieceId : piecesWithAccesFrom){
-            addPieceToSquares(pieceId);
-        }
-        for(int pieceId : piecesWithAccesTo){
-            addPieceToSquares(pieceId);
-        }
 }
 
 bool Board::isSquareEmpty(Position pos){
@@ -83,6 +68,7 @@ void Board::createSquares(){
 
 void Board::updatePieces(std::vector<int>& piecesToUpdate){
     for(int pieceId : piecesToUpdate){
+        removePieceFromSquares(pieceId)
         allPieces[pieceId]->calculateAvailableMoves();
         addPieceToSquares(pieceId);
     }
@@ -166,8 +152,12 @@ void Board::capture(Position pieceToCapturePosition){
     removePieceFromSquares(pieceId);
 }
 
-void Board::promotion(int id, char piece){
-
+void Board::promotion(int id, char type){
+   
+    Position tempPosition(getPieceById(id).getPosition()); 
+    allPieces[id] = nullptr;;
+    capture(tempPosition);
+    createPiece(id, type, tempPosition, *this);
 }
 
 void Board::updatePins(){
@@ -212,58 +202,40 @@ void Board::setUpPieces(){
 
     // King
 
-    allPieces[id] = std::make_unique<King>(id, color, Position(4, 0), *this);
-    whitePlayer.addPlayerPiece(id);
-    squares[4][0].setCurrentPiece(id);
+    createPiece(id, 'K', color, Position(4, 0), *this);
     id++;
 
     // Pawns
 
     for (int i = 0; i < 8; i++){
-        allPieces[id] = std::make_unique<Pawn>(id, color, Position(i, 1), *this);
-        whitePlayer.addPlayerPiece(id);
-        squares[i][1].setCurrentPiece(id);
+        createPiece(id, 'P', color, Position(i, 1), *this);
         id++;
     }
 
     // Bishops
 
-    allPieces[id] = std::make_unique<Bishop>(id, color, Position(2, 0), *this);
-    whitePlayer.addPlayerPiece(id);
-    squares[2][0].setCurrentPiece(id);
+    createPiece(id, 'B', color, Position(2, 0), *this);
     id++;
-    allPieces[id] = std::make_unique<Bishop>(id, color, Position(5, 0), *this);
-    whitePlayer.addPlayerPiece(id);
-    squares[5][0].setCurrentPiece(id);
+    createPiece(id, 'B', color, Position(5, 0), *this);
     id++;
 
     // Rooks
 
-    allPieces[id] = std::make_unique<Rook>(id, color, Position(0, 0), *this);
-    whitePlayer.addPlayerPiece(id);
-    squares[0][0].setCurrentPiece(id);
+    createPiece(id, 'R', color, Position(0, 0), *this);
     id++;
-    allPieces[id] = std::make_unique<Rook>(id, color, Position(7, 0), *this);
-    whitePlayer.addPlayerPiece(id);
-    squares[7][0].setCurrentPiece(id);
+    createPiece(id, 'R', color, Position(7, 0), *this);
     id++;
 
     // Knights
 
-    allPieces[id] = std::make_unique<Knight>(id, color, Position(1, 0), *this);
-    whitePlayer.addPlayerPiece(id);
-    squares[1][0].setCurrentPiece(id);
+    createPiece(id, 'N', color, Position(1, 0), *this);
     id++;
-    allPieces[id] = std::make_unique<Knight>(id, color, Position(6, 0), *this);
-    whitePlayer.addPlayerPiece(id);
-    squares[6][0].setCurrentPiece(id);
+    createPiece(id, 'N', color, Position(6, 0), *this);
     id++;
 
     // Queen
 
-    allPieces[id] = std::make_unique<Queen>(id, color, Position(3, 0), *this);
-    whitePlayer.addPlayerPiece(id);
-    squares[3][0].setCurrentPiece(id);
+    createPiece(id, 'Q', color, Position(3, 0));
     id++;
 
     // Czarny gracz
@@ -271,56 +243,75 @@ void Board::setUpPieces(){
 
     // King
 
-    allPieces[id] = std::make_unique<King>(id, color, Position(4, 7), *this);
-    blackPlayer.addPlayerPiece(id);
-    squares[4][7].setCurrentPiece(id);
+    createPiece(id, 'K', color, Position(4, 7), *this);
     id++;
 
     // Pawns
 
     for (int i = 0; i < 8; i++){
-        allPieces[id] = std::make_unique<Pawn>(id, color, Position(i, 6), *this);
-        blackPlayer.addPlayerPiece(id);
-        squares[i][6].setCurrentPiece(id);
+        createPiece(id, 'P', color, Position(i, 6), *this);
         id++;
     }
 
     // Bishops
 
-    allPieces[id] = std::make_unique<Bishop>(id, color, Position(2, 7), *this);
-    blackPlayer.addPlayerPiece(id);
-    squares[2][7].setCurrentPiece(id);
+    createPiece(id, 'B', color, Position(2, 7), *this);
     id++;
-    allPieces[id] = std::make_unique<Bishop>(id, color, Position(5, 7), *this);
-    blackPlayer.addPlayerPiece(id);
-    squares[5][7].setCurrentPiece(id);
+    createPiece(id, 'B', color, Position(5, 7), *this);
     id++;
 
     // Rooks
 
-    allPieces[id] = std::make_unique<Rook>(id, color, Position(0, 7), *this);
-    blackPlayer.addPlayerPiece(id);
-    squares[0][7].setCurrentPiece(id);
+    createPiece(id, 'R', color, Position(0, 7), *this);
     id++;
-    allPieces[id] = std::make_unique<Rook>(id, color, Position(7, 7), *this);
-    blackPlayer.addPlayerPiece(id);
-    squares[7][7].setCurrentPiece(id);
+    createPiece(id, 'R', color, Position(7, 7), *this);
     id++;
 
     // Knights
 
-    allPieces[id] = std::make_unique<Knight>(id, color, Position(1, 7), *this);
-    blackPlayer.addPlayerPiece(id);
-    squares[1][7].setCurrentPiece(id);
+    createPiece(id, 'N', color, Position(1, 7), *this);
     id++;
-    allPieces[id] = std::make_unique<Knight>(id, color, Position(6, 7), *this);
-    blackPlayer.addPlayerPiece(id);
-    squares[6][7].setCurrentPiece(id);
+    createPiece(id, 'N', color, Position(6, 7), *this);
     id++;
 
     // Queen
 
-    allPieces[id] = std::make_unique<Queen>(id, color, Position(3, 7), *this);
-    blackPlayer.addPlayerPiece(id);
-    squares[3][7].setCurrentPiece(id);
+    createPiece(id, 'Q', color, Position(3, 7), *this);
+    id++;
+}
+
+void Board::createPiece(int id, char type, bool isWhite, Position pos, Board& board){
+    switch(type){
+        case 'K':
+            allPieces[id] = std::make_unique<King>(id, isWhite, pos, board);
+            break;
+        case 'Q':
+            allPieces[id] = std::make_unique<Queen>(id, isWhite, pos, board);
+            break;
+        case 'R':
+            allPieces[id] = std::make_unique<Rook>(id, isWhite, pos, board);
+            break;
+        case 'B':
+            allPieces[id] = std::make_unique<Bishop>(id, isWhite, pos, board);
+            break;
+        case 'N':
+            allPieces[id] = std::make_unique<Knight>(id, isWhite, pos, board);
+            break;
+        case 'P':
+            allPieces[id] = std::make_unique<Pawn>(id, isWhite, pos, board);
+            break;
+        default:
+            throw std::invalid_argument("Bledny symbol figury!");
+            break;
+    }
+
+    if(isWhite){
+        whitePlayer.addPlayerPiece(id);
+
+    }
+    else{
+        blackPlayer.addPlayerPiece(id);
+    }
+
+    squares[pos.x][pos.y]->setCurrentPiece(id);
 }
