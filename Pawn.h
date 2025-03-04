@@ -2,21 +2,24 @@
 #define PAWN_H
 
 #include "Piece.h"
-#include "Game.h"
 #include "Move.h"
+
+#include <functional>
 
 class Pawn : public Piece{
     private:
-        Game& game;
-        Move& getLastMove();
+        std::function<Move()> getLastMoveFunction;
+
+        Move getLastMove();
         void enPassant();
         int promotionRow;
         int enPassantRow;
         bool canEnPassant(int dx);
     public:
-        Pawn(int id, bool isWhite, Position currentPosition, Board& board, Game& game);
+        Pawn(int id, bool isWhite, Position currentPosition, Board& board);
         void scanForPin(Position startPosition, int dx, int dy) override;
         void findMovesInDirection(std::pair<int, int> direction) override;
+        void setGetLastMoveFunction(std::function<Move()> func);
 };
 
 #endif

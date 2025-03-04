@@ -1,15 +1,18 @@
 #include "Pawn.h"
 
-Pawn::Pawn(int id, bool isWhite, Position currentPosition, Board& board, Game& game)
+Pawn::Pawn(int id, bool isWhite, Position currentPosition, Board& board)
     :   Piece(id, 'P', isWhite, currentPosition, board,
         isWhite ? std::vector<std::pair<int, int>>{{0, 1}, {1, 1}, {-1, 1}} : std::vector<std::pair<int, int>>{{0, -1}, {1, -1}, {-1, -1}}),
-        game(game),
         promotionRow(isWhite ? 7 : 0),
         enPassantRow(isWhite ? 5 : 3)
     {}
 
-Move& Pawn::getLastMove(){
-    return game.getLastMove();
+void Pawn::setGetLastMoveFunction(std::function<Move()> func){
+    getLastMoveFunction = func;
+}
+
+Move Pawn::getLastMove(){
+    return getLastMoveFunction;
 }
 
 void Pawn::findMovesInDirection(std::pair<int, int> direction){
