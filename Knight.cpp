@@ -19,7 +19,7 @@ void Knight::findMoveInDirection(std::pair<int, int> direction){
 
     if(board.isOnBoard(tempPosition)){
         if(board.isSquareEmpty(tempPosition)){
-            availableMove.push_back(tempPosition);
+            availableMoves.push_back(tempPosition);
         }
         else{
             int tempPieceId = board.getPieceIdAtPosition(tempPosition);

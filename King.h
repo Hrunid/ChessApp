@@ -4,10 +4,12 @@
 #include "Piece.h"
 
 class King : public Piece{
-
-    King(int id, bool isWhite, Position currentPosition, Board& board);
-    void calculateAvailableMoves() override;
-    bool isSquareSafe(Position pos);
+    private:
+        bool isSquareSafe(Position pos);
+    public:
+        King(int id, bool isWhite, Position currentPosition, Board& board);
+        void calculateAvailableMoves() override;
+        
 
 };
 

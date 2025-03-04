@@ -4,7 +4,7 @@ King::King(int id, bool isWhite, Position currentPosition, Board& board)
     :   Piece(id, 'K', isWhite, currentPosition, board, { {1, 0}, {-1 ,0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1} })
     {}
 
-King::calculateAvailableMoves(){
+void King::calculateAvailableMoves(){
     for(auto [dx, dy] : moveDirections){
         int x = currentPosition.x;
         int y = currentPosition.y;
@@ -12,9 +12,9 @@ King::calculateAvailableMoves(){
         x += dx;
         y += dy;
         Position tempPosition(x, y);
-        if(isOnBoard(tempPosition)){
+        if(board.isOnBoard(tempPosition)){
             if(isSquareSafe(tempPosition)){
-                if(board.isSquareEmpty()){
+                if(board.isSquareEmpty(tempPosition)){
                     availableMoves.push_back(tempPosition);
                 }
                 else{
@@ -35,7 +35,7 @@ King::calculateAvailableMoves(){
     }
 }
 
-King::isSquareSafe(Position pos){
+bool King::isSquareSafe(Position pos){
     std::vector<int>& pieces = board.getSquareAtPosition(pos).getPiecesWithAcces();
 
     for(int pieceId : pieces){

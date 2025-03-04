@@ -133,8 +133,8 @@ std::vector<Position> Player::getCheckLine(Position start, Position end){
 
     int x = start.x;
     int y = start.y;
-    int dx = direction.x;
-    int dy = direction.y;
+    int dx = direction.first;
+    int dy = direction.second;
     int x2 = end.x;
     int y2 = end.y;
     while(x != x2 || y != y2){
