@@ -5,7 +5,7 @@
 
 class Rook : public Piece{
     public:
-        Rook(int id, bool isWhite, Position currentPosition, Board& board);
+        Rook(int id, bool isWhite, Position currentPosition);
 };
 
 #endif

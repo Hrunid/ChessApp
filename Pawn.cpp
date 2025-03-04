@@ -1,8 +1,8 @@
 #include "Pawn.h"
 #include "Board.h"
 
-Pawn::Pawn(int id, bool isWhite, Position currentPosition, Board& board)
-    :   Piece(id, 'P', isWhite, currentPosition, board,
+Pawn::Pawn(int id, bool isWhite, Position currentPosition)
+    :   Piece(id, 'P', isWhite, currentPosition,
         isWhite ? std::vector<std::pair<int, int>>{{0, 1}, {1, 1}, {-1, 1}} : std::vector<std::pair<int, int>>{{0, -1}, {1, -1}, {-1, -1}}),
         promotionRow(isWhite ? 7 : 0),
         enPassantRow(isWhite ? 5 : 3)
@@ -23,12 +23,12 @@ void Pawn::findMovesInDirection(std::pair<int, int> direction){
         int dy = direction.second;
 
         Position tempPosition(x, y + dy);
-        if(board.isOnBoard(tempPosition)){
-            if(board.isSquareEmpty(tempPosition)){
+        if(board->isOnBoard(tempPosition)){
+            if(board->isSquareEmpty(tempPosition)){
                 availableMoves.push_back(tempPosition);
                 if(!hasMoved){
                     tempPosition = Position(tempPosition.x, tempPosition.y + dy);
-                    if(board.isOnBoard(tempPosition) && board.isSquareEmpty(tempPosition)){
+                    if(board->isOnBoard(tempPosition) && board->isSquareEmpty(tempPosition)){
                         availableMoves.push_back(tempPosition);
                     }
                     else{
@@ -52,8 +52,8 @@ void Pawn::findMovesInDirection(std::pair<int, int> direction){
     
             Position tempPosition(x, y);
     
-            if(board.isOnBoard(tempPosition)){
-                if(board.isSquareEmpty(tempPosition)){
+            if(board->isOnBoard(tempPosition)){
+                if(board->isSquareEmpty(tempPosition)){
                     if(canEnPassant(dx)){
                         availableMoves.push_back(tempPosition);
                     }
@@ -61,7 +61,7 @@ void Pawn::findMovesInDirection(std::pair<int, int> direction){
                         seenBlockedSquares.push_back(tempPosition);
                     }
                 }
-                else if(board.getPieceById(board.getPieceIdAtPosition(tempPosition)).isPieceWhite() == isWhite){
+                else if(board->getPieceById(board->getPieceIdAtPosition(tempPosition)).isPieceWhite() == isWhite){
                     seenBlockedSquares.push_back(tempPosition);
                 }
                 else{
@@ -87,7 +87,7 @@ bool Pawn::canEnPassant(int dx){
     }
     if(currentPosition.y == enPassantRow){
         const Move& lastMove = getLastMove();
-        char movedPiece = board.getPieceById(board.getPieceIdAtPosition(lastMove.getPositionTo())).getSymbol();
+        char movedPiece = board->getPieceById(board->getPieceIdAtPosition(lastMove.getPositionTo())).getSymbol();
         if(movedPiece == 'P'){
             int movedDist = lastMove.getPositionTo().y - lastMove.getPositionFrom().y;
             if(movedDist == yDiff){

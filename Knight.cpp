@@ -1,8 +1,8 @@
 #include "Knight.h"
 #include "Board.h"
 
-Knight::Knight(int id, bool isWhite, Position currentPosition, Board& board)
-    :   Piece(id, 'N', isWhite, currentPosition, board, { {1, 2}, {1, -2}, {2, 1}, {2, -1}, {-1, 2}, {-1, -2}, {-2, 1}, {-2, -1} })
+Knight::Knight(int id, bool isWhite, Position currentPosition)
+    :   Piece(id, 'N', isWhite, currentPosition, { {1, 2}, {1, -2}, {2, 1}, {2, -1}, {-1, 2}, {-1, -2}, {-2, 1}, {-2, -1} })
     {}
 
 
@@ -18,13 +18,13 @@ void Knight::findMovesInDirection(std::pair<int, int> direction){
 
     Position tempPosition(x, y);
 
-    if(board.isOnBoard(tempPosition)){
-        if(board.isSquareEmpty(tempPosition)){
+    if(board->isOnBoard(tempPosition)){
+        if(board->isSquareEmpty(tempPosition)){
             availableMoves.push_back(tempPosition);
         }
         else{
-            int tempPieceId = board.getPieceIdAtPosition(tempPosition);
-            bool tempIsWhite = board.getPieceById(tempPieceId).isPieceWhite();
+            int tempPieceId = board->getPieceIdAtPosition(tempPosition);
+            bool tempIsWhite = board->getPieceById(tempPieceId).isPieceWhite();
             if(tempIsWhite == isWhite){
                 seenBlockedSquares.push_back(tempPosition);
             }

@@ -10,6 +10,9 @@ Board::Board(Player& whitePlayer, Player& blackPlayer)
     :   whitePlayer(whitePlayer),
         blackPlayer(blackPlayer)
         {
+
+            Piece::setBoardPtr(this);
+
             createSquares();
             setUpPieces();
 
