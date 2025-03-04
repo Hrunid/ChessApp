@@ -6,7 +6,7 @@
 class Queen : public Piece{
     public:
 
-        Queen(int id, bool isWhite, Position currentPosition, Board& board);
+        Queen(int id, bool isWhite, Position currentPosition);
 
 };
 

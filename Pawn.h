@@ -16,7 +16,7 @@ class Pawn : public Piece{
         int enPassantRow;
         bool canEnPassant(int dx);
     public:
-        Pawn(int id, bool isWhite, Position currentPosition, Board& board);
+        Pawn(int id, bool isWhite, Position currentPosition);
         void scanForPin(Position startPosition, int dx, int dy) override;
         void findMovesInDirection(std::pair<int, int> direction) override;
         void setGetLastMoveFunction(std::function<Move()> func);
