@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <vector>
+#include <cstdlib>
 
 class Board{
     private:
@@ -23,14 +24,20 @@ class Board{
 
         void setUpPieces();
         void createSquares();
-
+        void createPiece(int id, char type, bool isWhite, Position pos, Board& board);
         
         bool isPinCurrent(Pin pin);
-        void updatePieces(std::vector<int>& pieceToUpdate);
+        void updatePieces(const std::vector<int>& pieceToUpdate);
         void removePieceFromSquares(int pieceId);
         void addPieceToSquares(int pieceId);
+        
+        
+        
+        void promotion(int id, char type); //TO DO
+        void castle(Position from, Position to);
+        void enPassant(Position from, Position to); 
         void capture(Position pieceToCapturePosition);
-        void createPiece(int id, char type, bool isWhite, Position pos, Board& board);
+        void updatePiecesAtPosition(Position pos);
         
     public:
         Board(Player& whitePlayer, Player& blackPlayer);
@@ -40,11 +47,10 @@ class Board{
         Square& getSquareAtPosition(Position pos);
         bool isSquareEmpty(Position pos); 
         bool isOnBoard(Position pos);
+        bool canPlayerCastle(bool isWhite);
         const std::vector<Pin>& getPins() const;
         std::pair<int, int> calculateDirection(Position from, Position to);
-        
-        void promotion(int id, char pieceToPromoteTo); //TO DO
-        void castle(); 
+               
         void makeMove(const Move& move);
         void updatePins();
         void addPin(Pin newPin);

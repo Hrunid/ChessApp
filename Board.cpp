@@ -1,4 +1,10 @@
 #include "Board.h"
+#include "King.h"
+#include "Bishop.h"
+#include "Queen.h"
+#include "Pawn.h"
+#include "Rook.h"
+#include "Knight.h"
 
 Board::Board(Player& whitePlayer, Player& blackPlayer)
     :   whitePlayer(whitePlayer),
@@ -16,25 +22,38 @@ Board::Board(Player& whitePlayer, Player& blackPlayer)
 
 void Board::makeMove(const Move& move){
 
-    Position from = move.from;
-    Position to = move.to;
+    const Position from = move.getPositionFrom();
+    Position to = move.getPositionTo();
+    std::string moveType = move.getMoveType();
 
-    if(!isSquareEmpty(to)){
-        capture(to);
+    for(char type : moveType){
+        switch (type)
+        {
+        case 'e':
+            enPassant(from, to);
+            break;
+        case 'c':
+            castle(from, to);
+            break;
+        case 'x':
+            capture(to);
+            break;
+        case '=':
+            //char pieceToPromoteTo = move.getPromotionPiece();
+            //promotion(getPieceIdAtPosition(from), pieceToPromoteTo);
+        default:
+            break;
         }
-    
-        const std::vector<int>& piecesWithAccesFrom = getSquareAtPosition(from).getPiecesWithAcces();
-        const std::vector<int>& piecesWithAccesTo = getSquareAtPosition(to).getPiecesWithAcces();
 
-        int pieceId = getPieceIdAtPosition(from);
+        updatePiecesAtPosition(from);
+        updatePiecesAtPosition(to);
+    }
 
-        getPieceById(pieceId).setPosition(to);
+}
 
-        getSquareAtPosition(from).setCurrentPiece(-1);
-        getSquareAtPosition(to).setCurrentPiece(pieceId);
-
-        updatePieces(piecesWithAccesFrom);
-        updatePieces(piecesWithAccesTo);
+void Board::updatePiecesAtPosition(Position pos){
+    const std::vector<int>& piecesWithAccess = getSquareAtPosition(pos).getPiecesWithAcces();
+    updatePieces(piecesWithAccess);
 
 }
 
@@ -66,7 +85,7 @@ void Board::createSquares(){
     }
 }
 
-void Board::updatePieces(std::vector<int>& piecesToUpdate){
+void Board::updatePieces(const std::vector<int>& piecesToUpdate){
     for(int pieceId : piecesToUpdate){
         removePieceFromSquares(pieceId);
         allPieces[pieceId]->calculateAvailableMoves();
@@ -155,14 +174,27 @@ void Board::capture(Position pieceToCapturePosition){
 void Board::promotion(int id, char type){
    
     Position tempPosition(getPieceById(id).getPosition()); 
-    bool tempIsWhie = getPieceById(id).
-    allPieces[id] = nullptr;;
+    bool tempIsWhie = getPieceById(id).isPieceWhite();
+    allPieces[id] = nullptr;
     capture(tempPosition);
-    createPiece(id, type, tempPosition, *this);
+    createPiece(id, type, tempIsWhie,tempPosition, *this);
 }
 
-void Board::castle(){
-    
+void Board::castle(Position from, Position to){
+
+}
+
+void Board::enPassant(Position from, Position to){
+
+}
+
+bool Board::canPlayerCastle(bool isWhite){
+    if(isWhite){
+        return whitePlayer.canPlayerCastle();
+    }
+    else{
+        return blackPlayer.canPlayerCastle();
+    }
 }
 
 void Board::updatePins(){
@@ -211,7 +243,7 @@ std::pair<int, int> Board::calculateDirection(Position from, Position to){
         dx = dx / std::abs(dx);
     }
     if(dy != 0){
-        dy = dy / std::abc(dy);
+        dy = dy / std::abs(dy);
     }
     return std::make_pair(dx, dy);
     

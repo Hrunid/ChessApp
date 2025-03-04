@@ -25,7 +25,7 @@ class Player{
         bool hasEnoughMaterial();
         bool isPlayerInCheck();
         bool hasPlayerMoves();
-        //bool canPlayerCastle();
+        bool canPlayerCastle();
 
         void removePlayerPiece(int pieceToRemove);
         void addPlayerPiece(int pieceToAdd);

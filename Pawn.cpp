@@ -1,4 +1,5 @@
 #include "Pawn.h"
+#include "Board.h"
 
 Pawn::Pawn(int id, bool isWhite, Position currentPosition, Board& board)
     :   Piece(id, 'P', isWhite, currentPosition, board,
@@ -12,7 +13,7 @@ void Pawn::setGetLastMoveFunction(std::function<Move()> func){
 }
 
 Move Pawn::getLastMove(){
-    return getLastMoveFunction;
+    return getLastMoveFunction();
 }
 
 void Pawn::findMovesInDirection(std::pair<int, int> direction){
@@ -60,7 +61,7 @@ void Pawn::findMovesInDirection(std::pair<int, int> direction){
                         seenBlockedSquares.push_back(tempPosition);
                     }
                 }
-                else if(board.getPieceById(getPieceIdAtPosition(tempPosition)).isPieceWhite() == isWhite){
+                else if(board.getPieceById(board.getPieceIdAtPosition(tempPosition)).isPieceWhite() == isWhite){
                     seenBlockedSquares.push_back(tempPosition);
                 }
                 else{
@@ -85,12 +86,12 @@ bool Pawn::canEnPassant(int dx){
         yDiff = 2;
     }
     if(currentPosition.y == enPassantRow){
-        Move& lastMove = getLastMove();
-        char movedPiece = board.getPieceById(board.getPieceIdAtPosition(lastMove.to)).getSymbol();
+        const Move& lastMove = getLastMove();
+        char movedPiece = board.getPieceById(board.getPieceIdAtPosition(lastMove.getPositionTo())).getSymbol();
         if(movedPiece == 'P'){
-            int movedDist = lastMove.to.y - lastMove.from.y;
+            int movedDist = lastMove.getPositionTo().y - lastMove.getPositionFrom().y;
             if(movedDist == yDiff){
-                if(lastMove.to.x - currentPosition.x == dx){
+                if(lastMove.getPositionTo().x - currentPosition.x == dx){
                     return true;
                 }
             }

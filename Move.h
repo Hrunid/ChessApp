@@ -13,14 +13,17 @@ class Move{
         char movedPieceSymbol;
         std::string moveType; // c - castle, x - capture, = - promotion, + - check, # - mate
 
-        std::string convertPositionTo();
+        std::string convertPositionTo(Position pos);
     public:
         Move(Position to, Position from, char movedPieceSymbol, std::string moveType);
-        Position getPositionTo();
-        Position getPositionFrom();
-        char getPieceSymbol();
-        std::string getMoveType();
+        Position getPositionTo() const;
+        Position getPositionFrom() const;
+        char getPieceSymbol() const;
+        std::string getMoveType() const;
+        char getMovedPieceSymbol() const;
+        
         std::string convertToPGN();
+        
 
 };
 
