@@ -39,7 +39,7 @@ bool Player::hasEnoughMaterial(){
 
 bool Player::isPlayerInCheck(){
     Position kingPosition = board.getPieceById(kingId).getPosition();
-    std::vector<int>& piecesWithAcces = board.getSquareAtPosition(kingPosition).getPiecesWithAcces();
+    const std::vector<int>& piecesWithAcces = board.getSquareAtPosition(kingPosition).getPiecesWithAcces();
 
     numOfChecks = 0;
 
@@ -79,6 +79,23 @@ void Player::removePlayerPiece(int pieceToRemove){
     }
 }
 
+bool Player::canPlayerCastle(){
+    if(isPlayerInCheck()){
+        return false;
+    }
+    else if(board.getPieceById(kingId).hasPieceMoved()){            //cheks if king has moved
+        return false;
+    }
+    for(int id : piecesId){
+        char tempSymbol = board.getPieceById(id).getSymbol();
+        bool tempHasMoved = board.getPieceById(id).hasPieceMoved();
+        if(tempSymbol == 'R' && !tempHasMoved){
+            return true;
+        }
+    }
+    return false;
+}
+
 void Player::addPlayerPiece(int pieceToAdd){
     piecesId.push_back(pieceToAdd);
 }
@@ -95,7 +112,7 @@ void Player::applyCheckRestrictions(){
     else if(numOfChecks == 1){
         Position kingPosition = board.getPieceById(kingId).getPosition();
         int attackingPieceId;
-        std::vector<int>& attackingPiecesId = board.getSquareAtPosition(kingPosition).getPiecesWithAcces();
+        const std::vector<int>& attackingPiecesId = board.getSquareAtPosition(kingPosition).getPiecesWithAcces();
 
         for(int id : attackingPiecesId){
             if(isWhite != board.getPieceById(id).isPieceWhite()){
@@ -113,7 +130,7 @@ void Player::applyCheckRestrictions(){
         }
 
         for(Position pos : checkLine){
-            std::vector<int>& attackingPieceId = board.getSquareAtPosition(pos).getPiecesWithAcces();
+            const std::vector<int>& attackingPieceId = board.getSquareAtPosition(pos).getPiecesWithAcces();
             for(int id : attackingPieceId){
                 if(isWhite == board.getPieceById(id).isPieceWhite()){
                     board.getPieceById(id).addMove(pos);

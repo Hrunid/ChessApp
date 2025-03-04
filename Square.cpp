@@ -1,3 +1,5 @@
+#include "Square.h"
+
 Square::Square(int currentPiece)
     :   currentPiece(currentPiece),
         piecesWithAcces()

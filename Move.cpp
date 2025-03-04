@@ -1,33 +1,35 @@
 #include "Move.h"
 
-Move::Move(Position to, Position from, char movedPieceSymbol, string moveType)
+#include <string>
+
+Move::Move(Position to, Position from, char movedPieceSymbol, std::string moveType)
     :   to(to),
         from(from),
         movedPieceSymbol(movedPieceSymbol),
         moveType(moveType)
         {}
 
-Position Move::getPositionTo(){
+Position Move::getPositionTo() const{
     return to;
 }
 
-Position Move::getPositionFrom(){
+Position Move::getPositionFrom() const{
     return from;
 }
 
-char Move::getMovedPieceSymbol(){
-    return getMovedPieceSymbol;
+char Move::getMovedPieceSymbol() const{
+    return movedPieceSymbol;
 }
 
-std::string Move::getMoveType(){
+std::string Move::getMoveType() const{
     return moveType;
 }
 
 std::string Move::convertToPGN(){
-    string PGN = "";
+    std::string PGN = "";
     char piece;
     if(movedPieceSymbol = 'P'){
-        piece = '';
+        piece = '\0';
     }
     else{
         piece = movedPieceSymbol;

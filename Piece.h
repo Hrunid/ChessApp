@@ -24,7 +24,7 @@ class Piece{
         std::vector<Position> availableMoves;
         std::vector<Position> seenBlockedSquares;
         
-        void findMovesInDirection(std::pair<int, int> direction);
+        virtual void findMovesInDirection(std::pair<int, int> direction);
 
     public:
         Piece(int id, char symbol, bool isWhite, Position currentPosition, Board& board, const std::vector<std::pair<int, int>>& moveDirections);
