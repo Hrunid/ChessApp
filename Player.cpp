@@ -84,7 +84,6 @@ void Player::addPlayerPiece(int pieceToAdd){
 }
 
 void Player::applyCheckRestrictions(){
-    numOfChecks = checks.size();
     if(numOfChecks >= 2){
         for(int pieceId : piecesId){
             board.getPieceById(pieceId).clearMoves();
@@ -105,8 +104,47 @@ void Player::applyCheckRestrictions(){
             }
         }
 
-        if()
+        char attackingPieceSymbol = board.getPieceById(attackingPieceId).getSymbol();
+        Position attackingPiecePosition = board.getPieceById(attackingPieceId).getPosition();
+        std::vector<Position> checkLine = getCheckLine(attackingPiecePosition, kingPosition);
+
+        for(int id : piecesId){
+            board.getPieceById(id).clearMoves();
+        }
+
+        for(Position pos : checkLine){
+            std::vector<int>& attackingPieceId = board.getSquareAtPosition(pos).getPiecesWithAcces();
+            for(int id : attackingPieceId){
+                if(isWhite == board.getPieceById(id).isPieceWhite()){
+                    board.getPieceById(id).addMove(pos);
+                }
+            }
+
+        }
+
     }
+}
+
+std::vector<Position> Player::getCheckLine(Position start, Position end){
+    std::vector<Position> checkLine;
+    std::pair<int, int> direction = board.calculateDirection(start, end);
+
+    checkLine.push_back(start);
+
+    int x = start.x;
+    int y = start.y;
+    int dx = direction.x;
+    int dy = direction.y;
+    int x2 = end.x;
+    int y2 = end.y;
+    while(x != x2 || y != y2){
+        x += dx;
+        y += dy;
+        Position tempPosition(x, y);
+        checkLine.push_back(tempPosition);
+    }
+
+    return checkLine;
 }
 
 

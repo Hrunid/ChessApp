@@ -51,6 +51,7 @@ class Piece{
         void setPin(bool pin);
         void pieceHasMoved();
         void clearMoves();
+        void addMove(Position pos);
         
 };
 
