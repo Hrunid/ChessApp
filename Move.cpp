@@ -33,8 +33,15 @@ std::string Move::convertToPGN(){
         piece = movedPieceSymbol;
     }
 
+    PGN = PGN + piece + moveType + convertPositionTo(to);
+
 }
 
 std::string convertPositionTo(Position pos){
-    
+    char x = 'a' + pos.x; 
+    char y = '1' + pos.y;
+    std::string s = "";
+    s += x;
+    s += y;
+    return s;
 }

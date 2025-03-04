@@ -15,6 +15,8 @@ class Player{
         std::vector<int> piecesId;
         Board& board;
 
+        std::vector<Position> getCheckLine(Position start, Position end);
+
     public:
         Player(int kingId, bool isWhite, Board& board);
         
@@ -27,9 +29,7 @@ class Player{
 
         void removePlayerPiece(int pieceToRemove);
         void addPlayerPiece(int pieceToAdd);
-
-        //void createNewPieceForPlayer()
-        //void applyCheckRestrictions();
+        void applyCheckRestrictions();
 
 };
 

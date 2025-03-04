@@ -68,7 +68,7 @@ void Board::createSquares(){
 
 void Board::updatePieces(std::vector<int>& piecesToUpdate){
     for(int pieceId : piecesToUpdate){
-        removePieceFromSquares(pieceId)
+        removePieceFromSquares(pieceId);
         allPieces[pieceId]->calculateAvailableMoves();
         addPieceToSquares(pieceId);
     }
@@ -155,9 +155,14 @@ void Board::capture(Position pieceToCapturePosition){
 void Board::promotion(int id, char type){
    
     Position tempPosition(getPieceById(id).getPosition()); 
+    bool tempIsWhie = getPieceById(id).
     allPieces[id] = nullptr;;
     capture(tempPosition);
     createPiece(id, type, tempPosition, *this);
+}
+
+void Board::castle(){
+    
 }
 
 void Board::updatePins(){
@@ -192,6 +197,28 @@ bool Board::isOnBoard(Position pos){
     }
     
     return true;
+}
+
+std::pair<int, int> Board::calculateDirection(Position from, Position to){
+    int x1 = from.x;
+    int y1 = from.y;
+    int x2 = to.x;
+    int y2 = to.y;
+
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+    if(dx != 0){
+        dx = dx / std::abs(dx);
+    }
+    if(dy != 0){
+        dy = dy / std::abc(dy);
+    }
+    return std::make_pair(dx, dy);
+    
+}
+
+const std::vector<Pin>& Board::getPins() const{
+    return pins;
 }
 
 void Board::setUpPieces(){
@@ -235,7 +262,7 @@ void Board::setUpPieces(){
 
     // Queen
 
-    createPiece(id, 'Q', color, Position(3, 0));
+    createPiece(id, 'Q', color, Position(3, 0), *this);
     id++;
 
     // Czarny gracz

@@ -40,12 +40,15 @@ class Board{
         Square& getSquareAtPosition(Position pos);
         bool isSquareEmpty(Position pos); 
         bool isOnBoard(Position pos);
-
+        const std::vector<Pin>& getPins() const;
+        std::pair<int, int> calculateDirection(Position from, Position to);
+        
         void promotion(int id, char pieceToPromoteTo); //TO DO
         void castle(); 
         void makeMove(const Move& move);
         void updatePins();
         void addPin(Pin newPin);
+
         
         
         

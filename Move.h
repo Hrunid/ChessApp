@@ -20,7 +20,7 @@ class Move{
         Position getPositionFrom();
         char getPieceSymbol();
         std::string getMoveType();
-        std::string convertToPgn();
+        std::string convertToPGN();
 
 };
 

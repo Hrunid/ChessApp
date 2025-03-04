@@ -23,7 +23,7 @@ void Piece::calculateAvailableMoves(){
 
     if(isPinned){
         int numOfPins = 0;
-        for(auto pin : board.pins){
+        for(auto pin : board.getPins()){
             if(pin.pinnedPieceId == id){
                 numOfPins++;
             }
@@ -33,7 +33,7 @@ void Piece::calculateAvailableMoves(){
         }
         else if(numOfPins == 1){
             std::pair<int, int> moveDir;
-            for(auto pin : board.pins){
+            for(auto pin : board.getPins()){
                 if(pin.pinnedPieceId == id){
                     moveDir = pin.pinnedPieceDirection;
                 }
@@ -201,4 +201,8 @@ void Piece::pieceHasMoved(){
 
 void Piece::clearMoves(){
     availableMoves.clear();
+}
+
+void Piece::addMove(Position pos){
+    availableMoves.push_back(pos);
 }
