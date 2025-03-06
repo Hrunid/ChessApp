@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 #include <cstdlib>
+#include <string>
 
 class Board{
     private:
@@ -55,6 +56,8 @@ class Board{
         void makeMove(const Move& move);
         void updatePins();
         void addPin(Pin newPin);
+
+        std::string convertToFEN();
 
         
         
