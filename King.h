@@ -8,7 +8,7 @@ class King : public Piece{
         bool isSquareSafe(Position pos);
         void findCastleMove(int dx);
     public:
-        King(int id, bool isWhite, Position currentPosition, Board& board);
+        King(int id, bool isWhite, Position currentPosition);
         void calculateAvailableMoves() override;
         
 

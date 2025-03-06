@@ -16,8 +16,8 @@ class Piece{
         const char symbol; 
         const bool isWhite;
         const std::vector<std::pair<int, int>> moveDirections;
+        static Board* board;
         Position currentPosition;
-        Board& board;
         bool isPinning;
         bool isPinned;
         bool hasMoved;
@@ -27,7 +27,7 @@ class Piece{
         virtual void findMovesInDirection(std::pair<int, int> direction);
 
     public:
-        Piece(int id, char symbol, bool isWhite, Position currentPosition, Board& board, const std::vector<std::pair<int, int>>& moveDirections);
+        Piece(int id, char symbol, bool isWhite, Position currentPosition, const std::vector<std::pair<int, int>>& moveDirections);
         
         virtual ~Piece() = default;
         
@@ -45,13 +45,16 @@ class Piece{
         bool isPiecePinned() const;
         bool hasPieceMoved() const;
         
-
+        static void setBoardPtr(Board* board);
         void setPosition(Position newPosition);
         void setPinningStatus(bool pins);
         void setPin(bool pin);
         void pieceHasMoved();
         void clearMoves();
         void addMove(Position pos);
+
+        
+
         
 };
 

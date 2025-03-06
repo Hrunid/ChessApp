@@ -10,6 +10,9 @@ Board::Board(Player& whitePlayer, Player& blackPlayer)
     :   whitePlayer(whitePlayer),
         blackPlayer(blackPlayer)
         {
+
+            Piece::setBoardPtr(this);
+
             createSquares();
             setUpPieces();
 
@@ -24,30 +27,29 @@ void Board::makeMove(const Move& move){
 
     const Position from = move.getPositionFrom();
     Position to = move.getPositionTo();
-    std::string moveType = move.getMoveType();
 
-    for(char type : moveType){
-        switch (type)
-        {
-        case 'e':
-            enPassant(from, to);
-            break;
-        case 'c':
-            castle(from, to);
-            break;
-        case 'x':
-            capture(to);
-            break;
-        case '=':
-            //char pieceToPromoteTo = move.getPromotionPiece();
-            //promotion(getPieceIdAtPosition(from), pieceToPromoteTo);
-        default:
-            break;
-        }
-
-        updatePiecesAtPosition(from);
-        updatePiecesAtPosition(to);
+    int movedPieceId = getPieceIdAtPosition(from);
+    Position tempPositionToUpdate(-1, -1);                        //in case of need to remeber another position as in case with castle
+    if(move.capture()){
+        capture(to);
     }
+    else if(move.castle()){
+        tempPositionToUpdate = castle(from, to);
+    }
+    else if(move.enPassant()){
+        enPassant(from, to);
+    }
+    else if(move.promotion()){
+        promotion(movedPieceId, move.getPromotionPieceSymbol());
+    }
+
+    movePiece(from ,to);
+    if(tempPositionToUpdate.x != -1 && tempPositionToUpdate.y != -1){
+        updatePiecesAtPosition(tempPositionToUpdate);
+    }
+    updatePiecesAtPosition(from);
+    updatePiecesAtPosition(to);
+    
 
 }
 
@@ -156,6 +158,12 @@ void Board::addPieceToSquares(int pieceId){
     }
 }
 
+void Board::movePiece(Position from, Position to){
+    int pieceToMoveId = getPieceIdAtPosition(from);
+    allPieces[pieceToMoveId]->setPosition(to);
+    getSquareAtPosition(from).setCurrentPiece(-1);
+}
+
 void Board::capture(Position pieceToCapturePosition){
 
     int pieceId = getPieceIdAtPosition(pieceToCapturePosition);
@@ -168,24 +176,50 @@ void Board::capture(Position pieceToCapturePosition){
         blackPlayer.removePlayerPiece(pieceId);
     }
 
+    getSquareAtPosition(pieceToCapturePosition).setCurrentPiece(-1);
     removePieceFromSquares(pieceId);
+    allPieces[pieceId] = nullptr;
+
 }
 
 void Board::promotion(int id, char type){
    
     Position tempPosition(getPieceById(id).getPosition()); 
     bool tempIsWhie = getPieceById(id).isPieceWhite();
-    allPieces[id] = nullptr;
     capture(tempPosition);
-    createPiece(id, type, tempIsWhie,tempPosition, *this);
+    createPiece(id, type, tempIsWhie,tempPosition);
 }
 
-void Board::castle(Position from, Position to){
+Position Board::castle(Position from, Position to){
+    int xDiff = from.x - to.x;
+    int dx;
+    Position rookPosition(0, from.y);
+    if(xDiff > 0){
+        rookPosition.x = 0; 
+        dx = -1;
+    }
+    else{
+        rookPosition.x = 7;
+        dx = 1;
+    }
+    Position newRookPosition(from.x + dx, from.y);
+    movePiece(rookPosition, newRookPosition);
+    return newRookPosition;
 
 }
 
-void Board::enPassant(Position from, Position to){
-
+Position Board::enPassant(Position from, Position to){
+    int xDiff = from.x - to.x;
+    int dx;
+    if(xDiff > 0){
+        dx = -1;
+    }
+    else{
+        dx = 1;
+    }
+    Position tempPosition(from.x + dx, from.y);
+    capture(tempPosition);
+    return tempPosition;
 }
 
 bool Board::canPlayerCastle(bool isWhite){
@@ -261,40 +295,40 @@ void Board::setUpPieces(){
 
     // King
 
-    createPiece(id, 'K', color, Position(4, 0), *this);
+    createPiece(id, 'K', color, Position(4, 0));
     id++;
 
     // Pawns
 
     for (int i = 0; i < 8; i++){
-        createPiece(id, 'P', color, Position(i, 1), *this);
+        createPiece(id, 'P', color, Position(i, 1));
         id++;
     }
 
     // Bishops
 
-    createPiece(id, 'B', color, Position(2, 0), *this);
+    createPiece(id, 'B', color, Position(2, 0));
     id++;
-    createPiece(id, 'B', color, Position(5, 0), *this);
+    createPiece(id, 'B', color, Position(5, 0));
     id++;
 
     // Rooks
 
-    createPiece(id, 'R', color, Position(0, 0), *this);
+    createPiece(id, 'R', color, Position(0, 0));
     id++;
-    createPiece(id, 'R', color, Position(7, 0), *this);
+    createPiece(id, 'R', color, Position(7, 0));
     id++;
 
     // Knights
 
-    createPiece(id, 'N', color, Position(1, 0), *this);
+    createPiece(id, 'N', color, Position(1, 0));
     id++;
-    createPiece(id, 'N', color, Position(6, 0), *this);
+    createPiece(id, 'N', color, Position(6, 0));
     id++;
 
     // Queen
 
-    createPiece(id, 'Q', color, Position(3, 0), *this);
+    createPiece(id, 'Q', color, Position(3, 0));
     id++;
 
     // Czarny gracz
@@ -302,62 +336,62 @@ void Board::setUpPieces(){
 
     // King
 
-    createPiece(id, 'K', color, Position(4, 7), *this);
+    createPiece(id, 'K', color, Position(4, 7));
     id++;
 
     // Pawns
 
     for (int i = 0; i < 8; i++){
-        createPiece(id, 'P', color, Position(i, 6), *this);
+        createPiece(id, 'P', color, Position(i, 6));
         id++;
     }
 
     // Bishops
 
-    createPiece(id, 'B', color, Position(2, 7), *this);
+    createPiece(id, 'B', color, Position(2, 7));
     id++;
-    createPiece(id, 'B', color, Position(5, 7), *this);
+    createPiece(id, 'B', color, Position(5, 7));
     id++;
 
     // Rooks
 
-    createPiece(id, 'R', color, Position(0, 7), *this);
+    createPiece(id, 'R', color, Position(0, 7));
     id++;
-    createPiece(id, 'R', color, Position(7, 7), *this);
+    createPiece(id, 'R', color, Position(7, 7));
     id++;
 
     // Knights
 
-    createPiece(id, 'N', color, Position(1, 7), *this);
+    createPiece(id, 'N', color, Position(1, 7));
     id++;
-    createPiece(id, 'N', color, Position(6, 7), *this);
+    createPiece(id, 'N', color, Position(6, 7));
     id++;
 
     // Queen
 
-    createPiece(id, 'Q', color, Position(3, 7), *this);
+    createPiece(id, 'Q', color, Position(3, 7));
     id++;
 }
 
-void Board::createPiece(int id, char type, bool isWhite, Position pos, Board& board){
+void Board::createPiece(int id, char type, bool isWhite, Position pos){
     switch(type){
         case 'K':
-            allPieces[id] = std::make_unique<King>(id, isWhite, pos, board);
+            allPieces[id] = std::make_unique<King>(id, isWhite, pos);
             break;
         case 'Q':
-            allPieces[id] = std::make_unique<Queen>(id, isWhite, pos, board);
+            allPieces[id] = std::make_unique<Queen>(id, isWhite, pos);
             break;
         case 'R':
-            allPieces[id] = std::make_unique<Rook>(id, isWhite, pos, board);
+            allPieces[id] = std::make_unique<Rook>(id, isWhite, pos);
             break;
         case 'B':
-            allPieces[id] = std::make_unique<Bishop>(id, isWhite, pos, board);
+            allPieces[id] = std::make_unique<Bishop>(id, isWhite, pos);
             break;
         case 'N':
-            allPieces[id] = std::make_unique<Knight>(id, isWhite, pos, board);
+            allPieces[id] = std::make_unique<Knight>(id, isWhite, pos);
             break;
         case 'P':
-            allPieces[id] = std::make_unique<Pawn>(id, isWhite, pos, board);
+            allPieces[id] = std::make_unique<Pawn>(id, isWhite, pos);
             break;
         default:
             throw std::invalid_argument("Bledny symbol figury!");
