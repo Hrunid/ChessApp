@@ -34,17 +34,40 @@ void Move::setPromotion(bool promotion) { wasPromotion = promotion; }
 void Move::setPromotionPiece(char piece) { promotionPiece = piece; }
 void Move::setMate(bool mate) { wasMate = mate; }        
 
-std::string Move::convertToPGN(){
+std::string Move::convertToPGN() {
+    if (wasCastle) {
+        if (from.x > to.x)
+            return "O-O-O";
+        else
+            return "O-O";
+    }
     std::string PGN = "";
-    char piece;
-    if(pieceSymbol = 'P'){
-        piece = '\0';
+    if (pieceSymbol != 'P') {
+        PGN.push_back(pieceSymbol);
+    } else {
+        if (wasCapture)
+            PGN.push_back('a' + from.x);
     }
-    else{
-        piece = pieceSymbol;
+    if (wasCapture)
+        PGN += "x";
+    PGN += convertPositionTo(to);
+    if (wasPromotion) {
+        PGN += "=";
+        PGN.push_back(promotionPiece);
     }
+    if (wasMate)
+        PGN += "#";
+    else if (wasCheck)
+        PGN += "+";
+    return PGN;
+}
 
-
+std::string Move::convertToUCI(){
+    std::string uci = convertPositionTo(from) + convertPositionTo(to);
+    if (wasPromotion) {
+        uci.push_back(std::tolower(promotionPiece));
+    }
+    return uci;
 }
 
 std::string convertPositionTo(Position pos){
