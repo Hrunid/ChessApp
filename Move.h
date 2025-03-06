@@ -7,21 +7,39 @@
 
 class Move{
     private:
-        //int moveNumber;
         Position to;
         Position from;
-        char movedPieceSymbol;
-        std::string moveType; // c - castle, x - capture, = - promotion, + - check, # - mate
+        char pieceSymbol;
+        bool wasCapture;
+        bool wasCheck;
+        bool wasCastle;
+        bool wasEnPassant;
+        bool wasPromotion;
+        char promotionPiece;
+        bool wasMate;
 
         std::string convertPositionTo(Position pos);
     public:
-        Move(Position to, Position from, char movedPieceSymbol, std::string moveType);
+        Move(Position to, Position from, char movedPieceSymbol);
         Position getPositionTo() const;
         Position getPositionFrom() const;
         char getPieceSymbol() const;
-        std::string getMoveType() const;
-        char getMovedPieceSymbol() const;
-        
+        bool capture() const;
+        bool check() const;
+        bool castle() const;
+        bool enPassant() const;
+        bool promotion() const;
+        char getPromotionPieceSymbol() const;
+        bool mate() const;
+
+        void setCheck(bool check);
+        void setCapture(bool capture);
+        void setCastle(bool castle);
+        void setEnPassant(bool enPassant);
+        void setPromotion(bool promotion);
+        void setPromotionPiece(char piece);
+        void setMate(bool mate);
+
         std::string convertToPGN();
         
 
