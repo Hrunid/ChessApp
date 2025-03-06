@@ -41,6 +41,7 @@ class Move{
         void setMate(bool mate);
 
         std::string convertToPGN();
+        std::string convertToUCI();
         
 
 };
