@@ -287,46 +287,69 @@ const std::vector<Pin>& Board::getPins() const{
     return pins;
 }
 
+std::string Board::convertToFEN(){
+    std::string FEN = "";
+    int emptySquaresCount;
+    for(int i = 7; i >= 0; i--){
+        emptySquaresCount = 0;
+        for(int j = 0; j <= 7; j++){
+            if(isSquareEmpty(Position(j, i))){
+                emptySquaresCount++;
+            }
+            else if(emptySquaresCount != 0){
+                FEN += std::to_string(emptySquaresCount);
+                emptySquaresCount = 0;
+            }
+            else{
+                emptySquaresCount = 0;
+                int tempId = getPieceIdAtPosition(Position(j, i));
+                bool tempIsWhite = allPieces[tempId]->isPieceWhite();
+                char tempPieceSymbol = allPieces[tempId]->getSymbol();
+                if(!tempIsWhite){
+                    tempPieceSymbol = std::tolower(tempPieceSymbol);
+                }
+                FEN += tempPieceSymbol;
+            }
+            
+        }
+        if(emptySquaresCount != 0){
+                FEN += std::to_string(emptySquaresCount);
+            }
+        FEN += '/';
+    }
+    FEN.pop_back();
+    return  FEN;
+}
+
 void Board::setUpPieces(){
     bool color = true;
     int id = 0;
 
     // Biały gracz
 
-    // King
 
     createPiece(id, 'K', color, Position(4, 0));
     id++;
-
-    // Pawns
 
     for (int i = 0; i < 8; i++){
         createPiece(id, 'P', color, Position(i, 1));
         id++;
     }
 
-    // Bishops
-
     createPiece(id, 'B', color, Position(2, 0));
     id++;
     createPiece(id, 'B', color, Position(5, 0));
     id++;
-
-    // Rooks
 
     createPiece(id, 'R', color, Position(0, 0));
     id++;
     createPiece(id, 'R', color, Position(7, 0));
     id++;
 
-    // Knights
-
     createPiece(id, 'N', color, Position(1, 0));
     id++;
     createPiece(id, 'N', color, Position(6, 0));
     id++;
-
-    // Queen
 
     createPiece(id, 'Q', color, Position(3, 0));
     id++;
@@ -334,40 +357,30 @@ void Board::setUpPieces(){
     // Czarny gracz
     color = false;
 
-    // King
 
     createPiece(id, 'K', color, Position(4, 7));
     id++;
-
-    // Pawns
 
     for (int i = 0; i < 8; i++){
         createPiece(id, 'P', color, Position(i, 6));
         id++;
     }
 
-    // Bishops
-
     createPiece(id, 'B', color, Position(2, 7));
     id++;
     createPiece(id, 'B', color, Position(5, 7));
     id++;
-
-    // Rooks
 
     createPiece(id, 'R', color, Position(0, 7));
     id++;
     createPiece(id, 'R', color, Position(7, 7));
     id++;
 
-    // Knights
 
     createPiece(id, 'N', color, Position(1, 7));
     id++;
     createPiece(id, 'N', color, Position(6, 7));
     id++;
-
-    // Queen
 
     createPiece(id, 'Q', color, Position(3, 7));
     id++;
