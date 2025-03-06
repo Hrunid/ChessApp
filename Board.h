@@ -24,7 +24,7 @@ class Board{
 
         void setUpPieces();
         void createSquares();
-        void createPiece(int id, char type, bool isWhite, Position pos, Board& board);
+        void createPiece(int id, char type, bool isWhite, Position pos);
         
         bool isPinCurrent(Pin pin);
         void updatePieces(const std::vector<int>& pieceToUpdate);
@@ -33,11 +33,12 @@ class Board{
         
         
         
-        void promotion(int id, char type); //TO DO
-        void castle(Position from, Position to);
-        void enPassant(Position from, Position to); 
+        void promotion(int id, char type);
+        Position castle(Position from, Position to);
+        Position enPassant(Position from, Position to); 
         void capture(Position pieceToCapturePosition);
         void updatePiecesAtPosition(Position pos);
+        void movePiece(Position from, Position to);
         
     public:
         Board(Player& whitePlayer, Player& blackPlayer);
