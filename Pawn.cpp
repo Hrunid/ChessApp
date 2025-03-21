@@ -99,3 +99,7 @@ bool Pawn::canEnPassant(int dx){
     }
     return false;
 }
+
+int Pawn::getPromoRow(){
+    return promotionRow;
+}

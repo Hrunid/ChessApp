@@ -20,6 +20,7 @@ class Pawn : public Piece{
         void scanForPin(Position startPosition, int dx, int dy) override;
         void findMovesInDirection(std::pair<int, int> direction) override;
         void setGetLastMoveFunction(std::function<Move()> func);
+        int getPromoRow();
 };
 
 #endif

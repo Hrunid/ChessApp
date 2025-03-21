@@ -10,9 +10,15 @@
 #include <string>
 #include <unordered_map>
 
+enum Result{
+    DRAW,
+    WIN,
+    LOSS
+};
+
 class Game{
     protected:
-        std::unique_ptr<Player> players;
+        std::unique_ptr<Player> players[2];
         std::unique_ptr<Board> board;
         std::stack<Move> moveHistory;
         std::unordered_map<std::string, int> positionHistory;
@@ -21,12 +27,12 @@ class Game{
         int currentPlayer;
 
         void runStockfish();
-        void createMove(int x, int y);
-        void createMoveFromAiRespone(std::string response);
+        Move createMove(Position from, Position to);
+        Move createMoveFromAiRespone(std::string response);
         void writePosition(std::string fen);
         void pgnToMoves(std::string pgn);      
-        std::string gameResult();
-        void executeTurn();
+        void executeTurn(Position from, Position to);
+        void checkGameState();
     public:
         Game();
         virtual ~Game() = default;
@@ -34,8 +40,8 @@ class Game{
         void startGame();
         void previousMove();
         void nextMove();
-        void endGame();
-        void processClick(int x, int y);
+        void endGame(Result res);
+        void processClick(Position click);
 };
 
 #endif

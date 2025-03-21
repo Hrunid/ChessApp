@@ -1,13 +1,17 @@
 #include "Player.h"
 #include "Board.h"
 
-Player::Player(int kingId, bool isWhite, Board& board)
+Player::Player(int kingId, bool isWhite)
     :   kingId(kingId),
         isWhite(isWhite),
         numOfChecks(0),
-        board(board),
+        board(nullptr),
         piecesId()
         {}
+
+Player::~Player(){
+    board = nullptr;
+}
 
 
 bool Player::hasEnoughMaterial(){
@@ -17,7 +21,7 @@ bool Player::hasEnoughMaterial(){
 
     for(int id : piecesId){
         
-        char pieceSymbol = board.getPieceById(id).getSymbol();
+        char pieceSymbol = board->getPieceById(id).getSymbol();
 
         if(pieceSymbol == 'P' || pieceSymbol == 'Q' || pieceSymbol == 'R'){
             return true;
@@ -38,13 +42,13 @@ bool Player::hasEnoughMaterial(){
 }
 
 bool Player::isPlayerInCheck(){
-    Position kingPosition = board.getPieceById(kingId).getPosition();
-    const std::vector<int>& piecesWithAcces = board.getSquareAtPosition(kingPosition).getPiecesWithAcces();
+    Position kingPosition = board->getPieceById(kingId).getPosition();
+    const std::vector<int>& piecesWithAcces = board->getSquareAtPosition(kingPosition).getPiecesWithAcces();
 
     numOfChecks = 0;
 
     for(int tempPieceId : piecesWithAcces){
-        bool tempIsWhite = board.getPieceById(tempPieceId).isPieceWhite();
+        bool tempIsWhite = board->getPieceById(tempPieceId).isPieceWhite();
         if(isWhite != tempIsWhite){
             numOfChecks++;
         }
@@ -61,7 +65,7 @@ bool Player::isPlayerInCheck(){
 bool Player::hasPlayerMoves(){
 
     for(int id : piecesId){
-        bool pieceHasNoMoves = board.getPieceById(id).getAvailableMoves().empty();
+        bool pieceHasNoMoves = board->getPieceById(id).getAvailableMoves().empty();
         if(!pieceHasNoMoves){
             return true;
         }
@@ -83,18 +87,20 @@ bool Player::canPlayerCastle(){
     if(isPlayerInCheck()){
         return false;
     }
-    else if(board.getPieceById(kingId).hasPieceMoved()){            //cheks if king has moved
+    else if(board->getPieceById(kingId).hasPieceMoved()){            //cheks if king has moved
         return false;
     }
     for(int id : piecesId){
-        char tempSymbol = board.getPieceById(id).getSymbol();
-        bool tempHasMoved = board.getPieceById(id).hasPieceMoved();
+        char tempSymbol = board->getPieceById(id).getSymbol();
+        bool tempHasMoved = board->getPieceById(id).hasPieceMoved();
         if(tempSymbol == 'R' && !tempHasMoved){
             return true;
         }
     }
     return false;
 }
+
+//Napisać osobne metody do roszady królewskiej i długiej. Uprościć Szukanie wieży poprzez sprawdzanie sprawdzanie rogu planszy.
 
 void Player::addPlayerPiece(int pieceToAdd){
     piecesId.push_back(pieceToAdd);
@@ -103,37 +109,38 @@ void Player::addPlayerPiece(int pieceToAdd){
 void Player::applyCheckRestrictions(){
     if(numOfChecks >= 2){
         for(int pieceId : piecesId){
-            board.getPieceById(pieceId).clearMoves();
+            board->getPieceById(pieceId).clearMoves();
 
         }
-        board.getPieceById(kingId).calculateAvailableMoves();
+        board->getPieceById(kingId).calculateAvailableMoves();
 
     }
     else if(numOfChecks == 1){
-        Position kingPosition = board.getPieceById(kingId).getPosition();
+        Position kingPosition = board->getPieceById(kingId).getPosition();
         int attackingPieceId;
-        const std::vector<int>& attackingPiecesId = board.getSquareAtPosition(kingPosition).getPiecesWithAcces();
+        const std::vector<int>& attackingPiecesId = board->getSquareAtPosition(kingPosition).getPiecesWithAcces();
 
         for(int id : attackingPiecesId){
-            if(isWhite != board.getPieceById(id).isPieceWhite()){
+            if(isWhite != board->getPieceById(id).isPieceWhite()){
                 attackingPieceId = id;
                 break;
             }
         }
 
-        char attackingPieceSymbol = board.getPieceById(attackingPieceId).getSymbol();
-        Position attackingPiecePosition = board.getPieceById(attackingPieceId).getPosition();
+        char attackingPieceSymbol = board->getPieceById(attackingPieceId).getSymbol();
+        Position attackingPiecePosition = board->getPieceById(attackingPieceId).getPosition();
         std::vector<Position> checkLine = getCheckLine(attackingPiecePosition, kingPosition);
 
         for(int id : piecesId){
-            board.getPieceById(id).clearMoves();
+            board->removePieceFromSquares(id);
+            board->getPieceById(id).clearMoves();
         }
 
         for(Position pos : checkLine){
-            const std::vector<int>& attackingPieceId = board.getSquareAtPosition(pos).getPiecesWithAcces();
+            const std::vector<int>& attackingPieceId = board->getSquareAtPosition(pos).getPiecesWithAcces();
             for(int id : attackingPieceId){
-                if(isWhite == board.getPieceById(id).isPieceWhite()){
-                    board.getPieceById(id).addMove(pos);
+                if(isWhite == board->getPieceById(id).isPieceWhite()){
+                    board->getPieceById(id).addMove(pos);
                 }
             }
 
@@ -142,9 +149,11 @@ void Player::applyCheckRestrictions(){
     }
 }
 
+// Trzeba poprawić metodę szacha - król jest uwzgledniony jako figura, która może się poruszyć wzdłuż linii szacha, co jest niepoprawne.
+
 std::vector<Position> Player::getCheckLine(Position start, Position end){
     std::vector<Position> checkLine;
-    std::pair<int, int> direction = board.calculateDirection(start, end);
+    std::pair<int, int> direction = board->calculateDirection(start, end);
 
     checkLine.push_back(start);
 
@@ -171,4 +180,12 @@ int Player::getKingId() const{
 
 bool Player::isPlayerWhite() const{
     return isWhite;
+}
+
+void Player::setBoardPtr(Board* board){
+    this->board = board;
+}
+
+const std::vector<int>& Player::getPiecesId(){
+    return piecesId;
 }

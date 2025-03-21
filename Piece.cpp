@@ -14,6 +14,9 @@ Piece::Piece(int id, char symbol, bool isWhite, Position currentPosition, const 
         seenBlockedSquares()
         {}
 
+Piece::~Piece(){
+    board = nullptr;
+}
 
 void Piece::calculateAvailableMoves(){
 
@@ -182,8 +185,16 @@ const std::vector<Position>& Piece::getSeenBlockedSquares() const{
     return seenBlockedSquares;
 }
 
-void Piece::setBoardPtr(Board* board){
-    board = board;
+bool Piece::isMoveAvailable(Position pos){
+    for(auto move : availableMoves){
+        if((pos.x == move.x) && (pos.y == move.y)){
+            return true;
+        }
+    }
+    return false;
+}
+void Piece::setBoardPtr(Board* b){
+    board = b;
 }
 
 void Piece::setPosition(Position newPosition){
@@ -209,3 +220,5 @@ void Piece::clearMoves(){
 void Piece::addMove(Position pos){
     availableMoves.push_back(pos);
 }
+
+

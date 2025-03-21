@@ -18,8 +18,8 @@ class Board{
         std::unique_ptr<Piece> allPieces[32];
         std::unique_ptr<Square> squares[8][8];
         
-        Player& whitePlayer;
-        Player& blackPlayer;
+        Player* whitePlayer;
+        Player* blackPlayer;
 
         std::vector<Pin> pins;
 
@@ -28,8 +28,8 @@ class Board{
         void createPiece(int id, char type, bool isWhite, Position pos);
         
         bool isPinCurrent(Pin pin);
-        void updatePieces(const std::vector<int>& pieceToUpdate);
-        void removePieceFromSquares(int pieceId);
+        
+        
         void addPieceToSquares(int pieceId);
         
         
@@ -42,8 +42,9 @@ class Board{
         void movePiece(Position from, Position to);
         
     public:
-        Board(Player& whitePlayer, Player& blackPlayer);
-
+        Board();
+        ~Board();
+        void setPlayerPtr(Player* player, bool isWhite);
         Piece& getPieceById(int id);
         int getPieceIdAtPosition(Position pos);
         Square& getSquareAtPosition(Position pos);
@@ -52,13 +53,12 @@ class Board{
         bool canPlayerCastle(bool isWhite);
         const std::vector<Pin>& getPins() const;
         std::pair<int, int> calculateDirection(Position from, Position to);
-               
+        void updatePieces(const std::vector<int>& pieceToUpdate);       
         void makeMove(const Move& move);
         void updatePins();
         void addPin(Pin newPin);
-
         std::string convertToFEN();
-
+        void removePieceFromSquares(int pieceId);
         
         
         
