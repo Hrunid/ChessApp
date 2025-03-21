@@ -50,7 +50,7 @@ class Board{
         Square& getSquareAtPosition(Position pos);
         bool isSquareEmpty(Position pos); 
         bool isOnBoard(Position pos);
-        bool canPlayerCastle(bool isWhite);
+        bool canPlayerCastle(bool isWhite, int dx);
         const std::vector<Pin>& getPins() const;
         std::pair<int, int> calculateDirection(Position from, Position to);
         void updatePieces(const std::vector<int>& pieceToUpdate);       
