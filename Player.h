@@ -16,7 +16,7 @@ class Player{
         Board* board;
 
         std::vector<Position> getCheckLine(Position start, Position end);
-
+        
     public:
         Player(int kingId, bool isWhite);
         ~Player();
@@ -25,7 +25,7 @@ class Player{
         bool hasEnoughMaterial();
         bool isPlayerInCheck();
         bool hasPlayerMoves();
-        bool canPlayerCastle();
+        bool canPlayerCastle(int dx);
         const std::vector<int>& getPiecesId();
         void removePlayerPiece(int pieceToRemove);
         void addPlayerPiece(int pieceToAdd);

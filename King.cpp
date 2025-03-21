@@ -39,45 +39,48 @@ void King::calculateAvailableMoves(){
         }
     }
 
-    if(board->canPlayerCastle(isWhite)){
-        for(int i = 0; i < 2; i++){
-            int dx = moveDirections[i].first;
-            bool isRookInDir;
-            Position rookPosition(0, 0);
-            if(dx < 0){
-                rookPosition.x = 0;
-                rookPosition.y = currentPosition.y;
-            }
-            else{
-                rookPosition.x = 7;
-                rookPosition.y = currentPosition.y;
-            }
-            if(!board->isSquareEmpty(rookPosition)){
-                int pieceId = board->getPieceIdAtPosition(rookPosition);
-                char pieceSymbol = board->getPieceById(pieceId).getSymbol();
-                if(pieceSymbol == 'R'){
-                    findCastleMove(dx);
-                }
-            }
-
+    for(int i = 0; i < 2; i++){
+        int dx = moveDirections[i].first;
+        if(board->canPlayerCastle(this->isWhite, dx)){
+            findCastleMove(dx);
         }
-        
+
     }
+
     
 
 }
 
 void King::findCastleMove(int dx){
-
-    Position tempPosition(currentPosition.x + dx, currentPosition.y);
-    if(board->isSquareEmpty(tempPosition) && isSquareSafe(tempPosition)){
-        Position castle(tempPosition.x + dx, tempPosition.y);
-        if(board->isSquareEmpty(castle) && isSquareSafe(castle)){
-            availableMoves.push_back(castle);
+    int n;
+    if(dx > 0){
+        n = 2;
+    }
+    else{
+        n = 3;
+    }
+    bool canCastle = true;
+    for(int i = 1; i <= n; i++){
+        Position tempPosition(currentPosition.x + dx * i, currentPosition.y);
+        if(i == 3){
+            if(!(board->isSquareEmpty(tempPosition))){
+                canCastle = false;
+                break;
+            }
         }
         else{
-            seenBlockedSquares.push_back(castle);
+            if(!(isSquareSafe(tempPosition)) || !(board->isSquareEmpty(tempPosition))){
+                canCastle = false;
+                break;
+            }
         }
+        
+    }
+    if(canCastle){
+        availableMoves.push_back(Position(currentPosition.x + 2 * dx, currentPosition.y));
+    }
+    else{
+        seenBlockedSquares.push_back(Position(currentPosition.x + 2 * dx, currentPosition.y));
     }
 
 }

@@ -83,22 +83,30 @@ void Player::removePlayerPiece(int pieceToRemove){
     }
 }
 
-bool Player::canPlayerCastle(){
+bool Player::canPlayerCastle(int dx){
     if(isPlayerInCheck()){
         return false;
     }
-    else if(board->getPieceById(kingId).hasPieceMoved()){            //cheks if king has moved
+    else if(board->getPieceById(kingId).hasPieceMoved()){            
         return false;
     }
-    for(int id : piecesId){
-        char tempSymbol = board->getPieceById(id).getSymbol();
-        bool tempHasMoved = board->getPieceById(id).hasPieceMoved();
-        if(tempSymbol == 'R' && !tempHasMoved){
+    int rookX;
+    if(dx > 0) rookX = 7;
+    else{
+        rookX = 0;
+    }
+    Position tempPosition(rookX, board->getPieceById(kingId).getPosition().y);
+    if(!board->isSquareEmpty(tempPosition)){
+        int tempPieceId = board->getPieceIdAtPosition(tempPosition);
+        char tempSymb = board->getPieceById(tempPieceId).getSymbol();
+        bool tempHasMoved = board->getPieceById(tempPieceId).hasPieceMoved();
+        if(tempSymb == 'R' && !tempHasMoved){
             return true;
         }
     }
     return false;
 }
+
 
 //Napisać osobne metody do roszady królewskiej i długiej. Uprościć Szukanie wieży poprzez sprawdzanie sprawdzanie rogu planszy.
 

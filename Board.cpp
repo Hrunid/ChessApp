@@ -229,12 +229,12 @@ Position Board::enPassant(Position from, Position to){
     return tempPosition;
 }
 
-bool Board::canPlayerCastle(bool isWhite){
+bool Board::canPlayerCastle(bool isWhite, int dx){
     if(isWhite){
-        return whitePlayer->canPlayerCastle();
+        return whitePlayer->canPlayerCastle(dx);
     }
     else{
-        return blackPlayer->canPlayerCastle();
+        return blackPlayer->canPlayerCastle(dx);
     }
 }
 
