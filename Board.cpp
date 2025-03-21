@@ -6,10 +6,12 @@
 #include "Rook.h"
 #include "Knight.h"
 
-Board::Board(Player& whitePlayer, Player& blackPlayer)
-    :   whitePlayer(whitePlayer),
-        blackPlayer(blackPlayer)
-        {
+Board::Board()
+    :   pins(),
+        whitePlayer(nullptr),
+        blackPlayer(nullptr)
+
+{
 
             Piece::setBoardPtr(this);
 
@@ -21,7 +23,12 @@ Board::Board(Player& whitePlayer, Player& blackPlayer)
                 int id = allPieces[i]->getId();
                 addPieceToSquares(id);
             }
-        }
+}
+
+Board::~Board(){
+    whitePlayer = nullptr;
+    blackPlayer = nullptr;
+}
 
 void Board::makeMove(const Move& move){
 
@@ -170,10 +177,10 @@ void Board::capture(Position pieceToCapturePosition){
     bool isWhite = getPieceById(pieceId).isPieceWhite();
 
     if(isWhite){
-        whitePlayer.removePlayerPiece(pieceId);
+        whitePlayer->removePlayerPiece(pieceId);
     }
     else{
-        blackPlayer.removePlayerPiece(pieceId);
+        blackPlayer->removePlayerPiece(pieceId);
     }
 
     getSquareAtPosition(pieceToCapturePosition).setCurrentPiece(-1);
@@ -224,10 +231,10 @@ Position Board::enPassant(Position from, Position to){
 
 bool Board::canPlayerCastle(bool isWhite){
     if(isWhite){
-        return whitePlayer.canPlayerCastle();
+        return whitePlayer->canPlayerCastle();
     }
     else{
-        return blackPlayer.canPlayerCastle();
+        return blackPlayer->canPlayerCastle();
     }
 }
 
@@ -412,11 +419,11 @@ void Board::createPiece(int id, char type, bool isWhite, Position pos){
     }
 
     if(isWhite){
-        whitePlayer.addPlayerPiece(id);
+        whitePlayer->addPlayerPiece(id);
 
     }
     else{
-        blackPlayer.addPlayerPiece(id);
+        blackPlayer->addPlayerPiece(id);
     }
 
     squares[pos.x][pos.y]->setCurrentPiece(id);

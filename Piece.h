@@ -44,8 +44,9 @@ class Piece{
         const std::vector<Position>& getSeenBlockedSquares() const;
         bool isPiecePinned() const;
         bool hasPieceMoved() const;
+        bool isMoveAvailable(Position pos);
         
-        static void setBoardPtr(Board* board);
+        static void setBoardPtr(Board* b);
         void setPosition(Position newPosition);
         void setPinningStatus(bool pins);
         void setPin(bool pin);
