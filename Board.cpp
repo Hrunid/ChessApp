@@ -6,6 +6,9 @@
 #include "Rook.h"
 #include "Knight.h"
 
+#include <random>
+#include <limits>
+
 Board::Board()
     :   pins(),
         whitePlayer(nullptr),
@@ -23,6 +26,21 @@ Board::Board()
                 int id = allPieces[i]->getId();
                 addPieceToSquares(id);
             }
+            for(int i = 0; i < 12; i++){
+                for(int j = 0; j < 64; j++){
+                    zobristTable[i][j] = random64BitNum();
+                }
+            }
+
+            for(int i = 0; i < 4; i++){
+                castleKeys[i] = random64BitNum();
+            }
+
+            for(int i = 0; i < 8; i++){
+                enPassantKeys[i] = random64BitNum();
+            }
+
+            blackPlayerKey = random64BitNum();
 }
 
 Board::~Board(){
@@ -427,4 +445,86 @@ void Board::createPiece(int id, char type, bool isWhite, Position pos){
     }
 
     squares[pos.x][pos.y]->setCurrentPiece(id);
+}
+
+uint64_t Board::random64BitNum(){
+    static std::random_device rd;
+    static std::mt19937_64 gen(rd());
+    static std::uniform_int_distribution<uint64_t> dis(0, std::numeric_limits<uint64_t>::max());
+    uint64_t num64 = dis(gen);
+    return num64;
+}
+
+int Board::getPieceIndexZ(int pieceId){
+    if(allPieces[pieceId] != nullptr){
+        int offset = allPieces[pieceId]->isPieceWhite() ? 0: 6;
+        char pieceType = allPieces[pieceId]->getSymbol();
+
+        switch (pieceType)
+        {
+            case 'P': return offset + 0;
+            case 'N': return offset + 1;
+            case 'B': return offset + 2;
+            case 'R': return offset + 3;
+            case 'Q': return offset + 4;
+            case 'K': return offset + 5;
+        }
+
+    }
+    else{
+        std::__throw_invalid_argument;
+    }
+   
+    
+}
+
+int Board::getSquareIndexZ(Position pos){
+    return pos.x * 8 + pos.y;
+}
+
+int Board::getCastleKeyZ(bool isWhite, int dx){
+    int color = isWhite ? 0 : 2;
+    int offset;
+    if(dx == 1) offset = 0;
+    else offset = 1;
+    return color + offset;
+}
+
+uint64_t Board::zobristHash(bool isBlackPlayer, std::pair<bool, int> enPassant){
+
+    uint64_t hash = 0;
+
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
+            Position tempPosition(i, j);
+            if(!isSquareEmpty(tempPosition)){
+                int tempPieceId = getPieceIdAtPosition(tempPosition);
+                hash ^= zobristTable[getPieceIndexZ(tempPieceId)][getSquareIndexZ(tempPosition)];
+            }
+        }
+    }
+    if(isBlackPlayer){
+        hash ^= blackPlayerKey;
+        if(blackPlayer->canPlayerCastle(1)){
+            hash ^= castleKeys[getCastleKeyZ(false, 1)];
+        }
+        if(blackPlayer->canPlayerCastle(-1)){
+            hash ^= castleKeys[getCastleKeyZ(false, -1)];
+        }
+    }
+    else{
+        if(whitePlayer->canPlayerCastle(1)){
+            hash ^= castleKeys[getCastleKeyZ(true, 1)];
+        }
+        if(whitePlayer->canPlayerCastle(-1)){
+            hash ^= castleKeys[getCastleKeyZ(true, -1)];
+        }
+    }
+    if(enPassant.first){
+        hash ^= enPassantKeys[enPassant.second];
+    }
+
+    return hash;
+
+
 }
