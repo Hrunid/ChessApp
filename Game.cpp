@@ -6,7 +6,8 @@ Game::Game()
         positionHistory(),
         moveCount(0),
         selectedPiece(-1),
-        currentPlayer(0)
+        currentPlayer(0),
+        boringMoves(0)
     {
         board = std::make_unique<Board>();
         players[0] = std::make_unique<Player>(0, true);
@@ -23,7 +24,9 @@ void Game::processClick(Position click){
     if(selectedPiece != -1){
         if(board->getPieceById(selectedPiece).isMoveAvailable(click)){
             char selSymb = board->getPieceById(selectedPiece).getSymbol();
-            if(selSymb == 'P')
+            if(selSymb == 'P'){
+                
+            }
             executeTurn(board->getPieceById(selectedPiece).getPosition(), click);
         }
         else if(!board->isSquareEmpty(click) && (board->getPieceById(pieceAtClick).isPieceWhite() == players[currentPlayer]->isPlayerWhite())){     //Check if clicked piece is same color as current player
@@ -77,30 +80,74 @@ Move Game::createMove(Position from, Position to){
 
 void Game::checkGameState(){
     
-    if(players[currentPlayer]->isPlayerInCheck()){
-
-        if(players[currentPlayer]->hasPlayerMoves()){
-            players[currentPlayer]->applyCheckRestrictions();
-        }
-        else{
-            endGame(LOSS);
-        }
-    }
-    else if(players[currentPlayer]->hasPlayerMoves()){
-        if(moveHistory.top().check()){
-            std::vector<int> playersPieces = players[currentPlayer]->getPiecesId();
-            board->updatePieces(playersPieces);
-        }
-        if(!players[currentPlayer]->hasEnoughMaterial()){
-            endGame(DRAW);
-        }
-
+    if(threeTimeRepetition() || fiftyMoveRule()){
+        endGame(DRAW);
     }
     else{
-        endGame(DRAW);
+        if(players[currentPlayer]->isPlayerInCheck()){
+
+            if(players[currentPlayer]->hasPlayerMoves()){
+                players[currentPlayer]->applyCheckRestrictions();
+            }
+            else{
+                endGame(LOSS);
+            }
+        }
+        else if(players[currentPlayer]->hasPlayerMoves()){
+            if(moveHistory.top().check()){
+                std::vector<int> playersPieces = players[currentPlayer]->getPiecesId();
+                board->updatePieces(playersPieces);
+            }
+            if(!players[currentPlayer]->hasEnoughMaterial()){
+                endGame(DRAW);
+            }
+
+        }
+        else{
+            endGame(DRAW);
+        }
     }
 }
 
-void endGame(Result res){
+void Game::endGame(Result res){
     std::cout<<"Game ended"<<res <<std::endl;
+}
+
+bool Game::threeTimeRepetition(){
+    Move tempMove = moveHistory.top();
+    char tempSymbol = tempMove.getPieceSymbol();
+    int yDiff = tempMove.getPositionFrom().y - tempMove.getPositionTo().y;
+    std::pair<bool, int> enPassant(false, 0);
+    if(tempSymbol == 'P' && (yDiff == 2 || yDiff == -2)){
+        enPassant.first = true;
+        enPassant.second = tempMove.getPositionFrom().x;
+    }
+
+    uint64_t position = board->zobristHash(players[currentPlayer]->isPlayerWhite(), enPassant);
+
+    if(positionHistory.find(position) != positionHistory.end()){
+        positionHistory[position]++;
+    }
+    else{
+        positionHistory[position]++;
+    }
+
+    if(positionHistory[position] == 3){
+        return true;
+    }
+    else{
+        return false;
+    }
+
+}
+
+bool Game::fiftyMoveRule(){
+    Move tempMove = moveHistory.top();
+    if(tempMove.capture()) boringMoves = 0;
+    else if(tempMove.getPieceSymbol() == 'P') boringMoves = 0;
+    else boringMoves++;
+
+    if(boringMoves >= 100) return true;
+    else return false;
+
 }
