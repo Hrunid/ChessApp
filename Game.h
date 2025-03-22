@@ -21,10 +21,11 @@ class Game{
         std::unique_ptr<Player> players[2];
         std::unique_ptr<Board> board;
         std::stack<Move> moveHistory;
-        std::unordered_map<std::string, int> positionHistory;
+        std::unordered_map<int, int> positionHistory;
         int moveCount;
         int selectedPiece;
         int currentPlayer;
+        int boringMoves;
 
         void runStockfish();
         Move createMove(Position from, Position to);
@@ -33,6 +34,8 @@ class Game{
         void pgnToMoves(std::string pgn);      
         void executeTurn(Position from, Position to);
         void checkGameState();
+        bool threeTimeRepetition();
+        bool fiftyMoveRule();
     public:
         Game();
         virtual ~Game() = default;

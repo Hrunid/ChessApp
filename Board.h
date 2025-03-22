@@ -17,23 +17,26 @@ class Board{
     private:
         std::unique_ptr<Piece> allPieces[32];
         std::unique_ptr<Square> squares[8][8];
-        
         Player* whitePlayer;
         Player* blackPlayer;
-
         std::vector<Pin> pins;
+        
+        uint64_t zobristTable[12][64];                                          //12 for pieces types, 64 for squares
+        uint64_t castleKeys[4];                                                 //4 castle posibilities
+        uint64_t enPassantKeys[8];                                              //8 en passant files
+        uint64_t blackPlayerKey;                                                //For black player move
 
         void setUpPieces();
         void createSquares();
         void createPiece(int id, char type, bool isWhite, Position pos);
+
+        uint64_t random64BitNum();
+        int getPieceIndexZ(int pieceId);
+        int getSquareIndexZ(Position pos);
+        int getCastleKeyZ(bool isWhite, int dx);                                //Player color & castle direction
         
-        bool isPinCurrent(Pin pin);
-        
-        
-        void addPieceToSquares(int pieceId);
-        
-        
-        
+        bool isPinCurrent(Pin pin);        
+        void addPieceToSquares(int pieceId);        
         void promotion(int id, char type);
         Position castle(Position from, Position to);
         Position enPassant(Position from, Position to); 
@@ -59,6 +62,9 @@ class Board{
         void addPin(Pin newPin);
         std::string convertToFEN();
         void removePieceFromSquares(int pieceId);
+        uint64_t zobristHash(bool blackPlayer, std::pair<bool, int> enPassant);
+
+
         
         
         
