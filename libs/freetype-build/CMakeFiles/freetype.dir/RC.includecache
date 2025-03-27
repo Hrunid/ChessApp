@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/freetype-src/src/base/ftver.rc
+windows.h
+-
+

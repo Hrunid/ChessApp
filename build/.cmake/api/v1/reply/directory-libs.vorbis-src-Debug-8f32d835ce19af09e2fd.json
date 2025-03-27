@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/vorbis-build",
+		"source" : "libs/vorbis-src"
+	}
+}

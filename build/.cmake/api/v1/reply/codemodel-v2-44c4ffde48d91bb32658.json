@@ -1,0 +1,519 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build",
+					"childIndexes" : 
+					[
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.sfml-src-Debug-ddfcae0a245774820baa.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "libs/sfml-src"
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML",
+					"childIndexes" : 
+					[
+						3,
+						4,
+						5,
+						6,
+						7,
+						9
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.sfml-src.src.SFML-Debug-7aad6525526ca5681ad7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "libs/sfml-src/src/SFML"
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/System",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.sfml-src.src.SFML.System-Debug-6f8a34ca112499e47284.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 1,
+					"source" : "libs/sfml-src/src/SFML/System",
+					"targetIndexes" : 
+					[
+						9
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Main",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.sfml-src.src.SFML.Main-Debug-4bc7a415c6e69665cd15.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 1,
+					"source" : "libs/sfml-src/src/SFML/Main",
+					"targetIndexes" : 
+					[
+						7
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Window",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.sfml-src.src.SFML.Window-Debug-83054db169336fd1a5cf.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 1,
+					"source" : "libs/sfml-src/src/SFML/Window",
+					"targetIndexes" : 
+					[
+						10
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Network",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.sfml-src.src.SFML.Network-Debug-57c0bdd5a90c3d771711.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 1,
+					"source" : "libs/sfml-src/src/SFML/Network",
+					"targetIndexes" : 
+					[
+						8
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Graphics",
+					"childIndexes" : 
+					[
+						8
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.sfml-src.src.SFML.Graphics-Debug-595a293b0f168d98e9af.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 1,
+					"source" : "libs/sfml-src/src/SFML/Graphics",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/freetype-build",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.freetype-src-Debug-b778be8237fc48ccd427.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 7,
+					"projectIndex" : 2,
+					"source" : "libs/freetype-src",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Audio",
+					"childIndexes" : 
+					[
+						10,
+						11,
+						15
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.sfml-src.src.SFML.Audio-Debug-c2c2514f5e2790caa3cc.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 1,
+					"source" : "libs/sfml-src/src/SFML/Audio",
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/ogg-build",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.ogg-src-Debug-b5c71dba20a469a50b21.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 3,
+					"source" : "libs/ogg-src",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/flac-build",
+					"childIndexes" : 
+					[
+						12,
+						14
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.flac-src-Debug-96c31dc57af9302aebbc.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 4,
+					"source" : "libs/flac-src"
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/flac-build/src",
+					"childIndexes" : 
+					[
+						13
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.flac-src.src-Debug-a6b1a1b969ecac86affe.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11"
+					},
+					"parentIndex" : 11,
+					"projectIndex" : 4,
+					"source" : "libs/flac-src/src"
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/flac-build/src/libFLAC",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.flac-src.src.libFLAC-Debug-0eb7cea2ab832a346789.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11"
+					},
+					"parentIndex" : 12,
+					"projectIndex" : 4,
+					"source" : "libs/flac-src/src/libFLAC",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/flac-build/microbench",
+					"jsonFile" : "directory-libs.flac-src.microbench-Debug-731c90f24df7f725ed97.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 11,
+					"projectIndex" : 4,
+					"source" : "libs/flac-src/microbench",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/vorbis-build",
+					"childIndexes" : 
+					[
+						16
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.vorbis-src-Debug-8f32d835ce19af09e2fd.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 5,
+					"source" : "libs/vorbis-src"
+				},
+				{
+					"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/vorbis-build/lib",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-libs.vorbis-src.lib-Debug-ff4b475a72733e06d97d.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 15,
+					"projectIndex" : 5,
+					"source" : "libs/vorbis-src/lib",
+					"targetIndexes" : 
+					[
+						11,
+						12,
+						13
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "ChessAppBuildTest",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5
+					],
+					"directoryIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						9
+					],
+					"name" : "SFML",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						5,
+						6,
+						7,
+						8,
+						9,
+						10
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "freetype",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						10
+					],
+					"name" : "libogg",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						11,
+						12,
+						13,
+						14
+					],
+					"name" : "FLAC",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						1,
+						2
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						15,
+						16
+					],
+					"name" : "vorbis",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						11,
+						12,
+						13
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ChessAppBuildTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ChessAppBuildTest-Debug-ac5fa3bdf7fbe80026f9.json",
+					"name" : "ChessAppBuildTest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "FLAC::@19bfe9ed91349160a614",
+					"jsonFile" : "target-FLAC-Debug-189b3e796b5b3516afb1.json",
+					"name" : "FLAC",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 14,
+					"id" : "benchmark_residual::@3cb8ef10d10175062673",
+					"jsonFile" : "target-benchmark_residual-Debug-7e1426947b680948b54f.json",
+					"name" : "benchmark_residual",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "freetype::@512ee2be3db42a95a370",
+					"jsonFile" : "target-freetype-Debug-5edfc6f911209d6f6805.json",
+					"name" : "freetype",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "ogg::@d1eaade07186eda7d623",
+					"jsonFile" : "target-ogg-Debug-8be023807a93c8883d06.json",
+					"name" : "ogg",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "sfml-audio::@e95f1bc7ec664844a46c",
+					"jsonFile" : "target-sfml-audio-Debug-776bf4f10a37846bc229.json",
+					"name" : "sfml-audio",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "sfml-graphics::@41dd1f07d2e357c2a0ca",
+					"jsonFile" : "target-sfml-graphics-Debug-aa2ab8d2ad410e9138c4.json",
+					"name" : "sfml-graphics",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "sfml-main::@abe08528081bf2637ee9",
+					"jsonFile" : "target-sfml-main-Debug-7cc3a00945c896f521ac.json",
+					"name" : "sfml-main",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "sfml-network::@345dff53d5a9725d9cbb",
+					"jsonFile" : "target-sfml-network-Debug-708faab12805e0b5c9b2.json",
+					"name" : "sfml-network",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "sfml-system::@b55f6e3e4890526c27ce",
+					"jsonFile" : "target-sfml-system-Debug-81857d97266502a1228a.json",
+					"name" : "sfml-system",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "sfml-window::@2279245cf8b6a7d4a7a6",
+					"jsonFile" : "target-sfml-window-Debug-8e6179937ce6a9d64bee.json",
+					"name" : "sfml-window",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "vorbis::@63661e3e3953b130d206",
+					"jsonFile" : "target-vorbis-Debug-76c79d52935c584d7885.json",
+					"name" : "vorbis",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "vorbisenc::@63661e3e3953b130d206",
+					"jsonFile" : "target-vorbisenc-Debug-23accfc4a4770931af43.json",
+					"name" : "vorbisenc",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 16,
+					"id" : "vorbisfile::@63661e3e3953b130d206",
+					"jsonFile" : "target-vorbisfile-Debug-9331c689e6c336737cce.json",
+					"name" : "vorbisfile",
+					"projectIndex" : 5
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/build",
+		"source" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}

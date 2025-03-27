@@ -1,0 +1,53 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"sfml_add_library"
+		],
+		"files" : 
+		[
+			"libs/sfml-src/cmake/Macros.cmake",
+			"libs/sfml-src/src/SFML/Network/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 43,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 232,
+				"parent" : 1
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "devel",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/lib/libsfml-network-s-d.a"
+			],
+			"targetId" : "sfml-network::@345dff53d5a9725d9cbb",
+			"targetIndex" : 8,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Network",
+		"source" : "libs/sfml-src/src/SFML/Network"
+	}
+}

@@ -1,0 +1,69 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"sfml_add_library"
+		],
+		"files" : 
+		[
+			"libs/sfml-src/cmake/Macros.cmake",
+			"libs/sfml-src/src/SFML/Graphics/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 88,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 232,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 256,
+				"parent" : 1
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "devel",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/lib/libsfml-graphics-s-d.a"
+			],
+			"targetId" : "sfml-graphics::@41dd1f07d2e357c2a0ca",
+			"targetIndex" : 6,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "devel",
+			"destination" : "lib/cmake/SFML",
+			"paths" : 
+			[
+				"libs/sfml-build/src/SFML/Graphics/SFMLGraphicsDependencies.cmake"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Graphics",
+		"source" : "libs/sfml-src/src/SFML/Graphics"
+	}
+}

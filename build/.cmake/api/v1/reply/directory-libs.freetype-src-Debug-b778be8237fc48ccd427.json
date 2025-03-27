@@ -1,0 +1,89 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"libs/freetype-src/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 631,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 639,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 644,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/lib/libfreetyped.a"
+			],
+			"targetId" : "freetype::@512ee2be3db42a95a370",
+			"targetIndex" : 3,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "headers",
+			"destination" : "lib/cmake/freetype",
+			"exportName" : "freetype-targets",
+			"exportTargets" : 
+			[
+				{
+					"id" : "freetype::@512ee2be3db42a95a370",
+					"index" : 3
+				},
+				{
+					"id" : "freetype-interface::@512ee2be3db42a95a370",
+					"index" : 0
+				}
+			],
+			"paths" : 
+			[
+				"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/freetype-build/CMakeFiles/Export/778b4f54a68e80ec034bf381f364ca2c/freetype-config.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "headers",
+			"destination" : "lib/cmake/freetype",
+			"paths" : 
+			[
+				"libs/freetype-build/freetype-config-version.cmake"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/freetype-build",
+		"source" : "libs/freetype-src"
+	}
+}

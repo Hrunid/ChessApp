@@ -1,0 +1,23 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/build/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/System/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Main/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Window/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Network/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Graphics/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/freetype-build/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/src/SFML/Audio/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/ogg-build/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/flac-build/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/flac-build/src/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/flac-build/src/libFLAC/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/flac-build/microbench/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/vorbis-build/cmake_install.cmake",
+		"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/vorbis-build/lib/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

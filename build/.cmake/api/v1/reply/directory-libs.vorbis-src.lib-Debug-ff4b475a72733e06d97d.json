@@ -1,0 +1,118 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"libs/vorbis-src/lib/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 117,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 129,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 145,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/lib/libvorbisd.a"
+			],
+			"targetId" : "vorbis::@63661e3e3953b130d206",
+			"targetIndex" : 11,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/lib/libvorbisencd.a"
+			],
+			"targetId" : "vorbisenc::@63661e3e3953b130d206",
+			"targetIndex" : 12,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/sfml-build/lib/libvorbisfiled.a"
+			],
+			"targetId" : "vorbisfile::@63661e3e3953b130d206",
+			"targetIndex" : 13,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/Vorbis",
+			"exportName" : "VorbisTargets",
+			"exportTargets" : 
+			[
+				{
+					"id" : "vorbis::@63661e3e3953b130d206",
+					"index" : 11
+				},
+				{
+					"id" : "vorbisenc::@63661e3e3953b130d206",
+					"index" : 12
+				},
+				{
+					"id" : "vorbisfile::@63661e3e3953b130d206",
+					"index" : 13
+				}
+			],
+			"paths" : 
+			[
+				"C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/vorbis-build/lib/CMakeFiles/Export/cc38caa321284793c52f43683a3b76fc/VorbisTargets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/Vorbis",
+			"paths" : 
+			[
+				"libs/vorbis-build/VorbisConfig.cmake",
+				"libs/vorbis-build/VorbisConfigVersion.cmake"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/vorbis-build/lib",
+		"source" : "libs/vorbis-src/lib"
+	}
+}
