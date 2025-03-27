@@ -1,0 +1,2 @@
+C:\msys64\ucrt64\bin\ar.exe qc C:\Users\wiktw\OneDrive\Dokumenty\c++\SzachyZId\ChessApp\libs\sfml-build\lib\libvorbisfiled.a CMakeFiles/vorbisfile.dir/vorbisfile.c.obj
+C:\msys64\ucrt64\bin\ranlib.exe C:\Users\wiktw\OneDrive\Dokumenty\c++\SzachyZId\ChessApp\libs\sfml-build\lib\libvorbisfiled.a
