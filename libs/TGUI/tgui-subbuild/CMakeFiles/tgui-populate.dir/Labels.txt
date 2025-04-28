@@ -1,0 +1,14 @@
+# Target labels
+ tgui-populate
+# Source files and their labels
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/CMakeFiles/tgui-populate
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/CMakeFiles/tgui-populate.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/CMakeFiles/tgui-populate-complete.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/tgui-populate-prefix/src/tgui-populate-stamp/tgui-populate-build.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/tgui-populate-prefix/src/tgui-populate-stamp/tgui-populate-configure.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/tgui-populate-prefix/src/tgui-populate-stamp/tgui-populate-download.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/tgui-populate-prefix/src/tgui-populate-stamp/tgui-populate-install.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/tgui-populate-prefix/src/tgui-populate-stamp/tgui-populate-mkdir.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/tgui-populate-prefix/src/tgui-populate-stamp/tgui-populate-patch.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/tgui-populate-prefix/src/tgui-populate-stamp/tgui-populate-test.rule
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/tgui-populate-prefix/src/tgui-populate-stamp/tgui-populate-update.rule

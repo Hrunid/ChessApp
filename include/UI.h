@@ -5,15 +5,20 @@
 
 #include <vector>
 
+
+#include <SFML/Graphics.hpp>
+#include <TGUI/TGUI.hpp>
+
 class UI{
     private:
 
     public:
+        UI::UI();
         void drawBoard();
         void movePiece(Position from, Position to);
         void deletePiece(Position pos);
         void drawPromotionChoise();
-        void drawAvailableMoves(std::vector<Position> moves);                   
+        void drawAvailableMoves(const std::vector<Position>& moves);                   
         void drawMenu();
         void drawEndGame();
         void drawSidePanel();

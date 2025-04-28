@@ -1,0 +1,3 @@
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/CMakeFiles/tgui-populate.dir
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/CMakeFiles/edit_cache.dir
+C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/libs/TGUI/tgui-subbuild/CMakeFiles/rebuild_cache.dir
