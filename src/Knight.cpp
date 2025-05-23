@@ -36,4 +36,6 @@ void Knight::findMovesInDirection(std::pair<int, int> direction){
 
 }
 
-void Knight::scanForPin(Position startPosition, int dx, int dy){}
+void Knight::scanForPin(Position startPosition, int dx, int dy){
+    
+}

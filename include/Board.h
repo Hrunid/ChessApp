@@ -43,6 +43,7 @@ class Board{
         void capture(Position pieceToCapturePosition);
         void updatePiecesAtPosition(Position pos);
         void movePiece(Position from, Position to);
+        void generateRandNumbers();
         
     public:
         Board();

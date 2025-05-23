@@ -19,8 +19,8 @@ void Square::setCurrentPiece(int newPieceId){
 
 void Square::removeAttacker(int pieceToRemove){
     for(int i=0; i < piecesWithAcces.size(); i++){
-        int pieceId = piecesWithAcces[i];
-        if(pieceId == pieceToRemove){
+        
+        if(int pieceId = piecesWithAcces[i]; pieceId == pieceToRemove){
             piecesWithAcces.erase(piecesWithAcces.begin() + i);
             break;
         } 

@@ -16,8 +16,8 @@ void King::calculateAvailableMoves(){
 
         x += dx;
         y += dy;
-        Position tempPosition(x, y);
-        if(board->isOnBoard(tempPosition)){
+        
+        if(Position tempPosition(x, y); board->isOnBoard(tempPosition)){
             if(isSquareSafe(tempPosition)){
                 if(board->isSquareEmpty(tempPosition)){
                     availableMoves.push_back(tempPosition);

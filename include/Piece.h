@@ -12,11 +12,11 @@ class Board;
 
 class Piece{
     protected:
+        inline static Board* board;
         const int id;
         const char symbol; 
         const bool isWhite;
         const std::vector<std::pair<int, int>> moveDirections;
-        static Board* board;
         Position currentPosition;
         bool isPinning;
         bool isPinned;

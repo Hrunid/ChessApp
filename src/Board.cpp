@@ -16,31 +16,18 @@ Board::Board()
 
 {
             
-            Piece::setBoardPtr(this);
+    Piece::setBoardPtr(this);
 
-            createSquares();
-            setUpPieces();
+    createSquares();
+    setUpPieces();
 
-            for(int i = 0; i < 32; i++){
-                allPieces[i]->calculateAvailableMoves();
-                int id = allPieces[i]->getId();
-                addPieceToSquares(id);
-            }
-            for(int i = 0; i < 12; i++){
-                for(int j = 0; j < 64; j++){
-                    zobristTable[i][j] = random64BitNum();
-                }
-            }
 
-            for(int i = 0; i < 4; i++){
-                castleKeys[i] = random64BitNum();
-            }
-
-            for(int i = 0; i < 8; i++){
-                enPassantKeys[i] = random64BitNum();
-            }
-
-            blackPlayerKey = random64BitNum();
+    for(int i = 0; i < 32; i++){
+        allPieces[i]->calculateAvailableMoves();
+        int id = allPieces[i]->getId();
+        addPieceToSquares(id);
+    }
+            
 }
 
 Board::~Board(){
@@ -54,7 +41,7 @@ void Board::makeMove(const Move& move){
     Position to = move.getPositionTo();
 
     int movedPieceId = getPieceIdAtPosition(from);
-    Position tempPositionToUpdate(-1, -1);                        //in case of need to remeber another position as in case with castle
+    Position tempPositionToUpdate(-1, -1);                        
     if(move.capture()){
         capture(to);
     }
@@ -85,8 +72,8 @@ void Board::updatePiecesAtPosition(Position pos){
 }
 
 bool Board::isSquareEmpty(Position pos){
-    int pieceIdAtPosition = getSquareAtPosition(pos).getCurrentPieceId();
-    if(pieceIdAtPosition == -1){
+    
+    if(int pieceIdAtPosition = getSquareAtPosition(pos).getCurrentPieceId(); pieceIdAtPosition == -1){
         return true;
     }
     else{
@@ -133,14 +120,14 @@ bool Board::isPinCurrent(Pin pin){
         x += dx;
         y += dy;
 
-        Position tempPosition(x, y);
+        
 
-        if(!isOnBoard(tempPosition)){
+        if(Position tempPosition(x, y); !isOnBoard(tempPosition)){
             break;
         }
         else if(!isSquareEmpty(tempPosition)){
-            int tempPieceId = getPieceIdAtPosition(tempPosition);
-            if(tempPieceId == pinned){
+            
+            if(int tempPieceId = getPieceIdAtPosition(tempPosition); tempPieceId == pinned){
                 return true;
             }
             else{
@@ -466,11 +453,14 @@ int Board::getPieceIndexZ(int pieceId){
             case 'R': return offset + 3;
             case 'Q': return offset + 4;
             case 'K': return offset + 5;
+            default: return 0;
         }
+        return offset;
 
     }
     else{
         std::__throw_invalid_argument;
+        return -1;
     }
    
     
@@ -524,5 +514,36 @@ uint64_t Board::zobristHash(bool isBlackPlayer, std::pair<bool, int> enPassant){
 
     return hash;
 
+
+
+    
+
+}
+
+void Board::setPlayerPtr(Player* player, bool isWhite){
+    if(isWhite){
+        this->whitePlayer = player;
+    }
+    else{
+        this->blackPlayer = player;
+    }
+}
+
+void Board::generateRandNumbers(){
+    for(int i = 0; i < 12; i++){
+        for(int j = 0; j < 64; j++){
+            zobristTable[i][j] = random64BitNum();
+        }
+    }
+
+    for(int i = 0; i < 4; i++){
+        castleKeys[i] = random64BitNum();
+    }
+
+    for(int i = 0; i < 8; i++){
+        enPassantKeys[i] = random64BitNum();
+    }
+
+    blackPlayerKey = random64BitNum();
 
 }

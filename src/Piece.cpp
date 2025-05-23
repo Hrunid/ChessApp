@@ -14,10 +14,7 @@ Piece::Piece(int id, char symbol, bool isWhite, Position currentPosition, const 
         seenBlockedSquares()
         {}
 
-Piece::~Piece(){
-    board = nullptr;
-}
-
+        
 void Piece::calculateAvailableMoves(){
 
     availableMoves.clear();

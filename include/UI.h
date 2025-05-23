@@ -3,26 +3,39 @@
 
 #include "Position.h"
 
-#include <vector>
-
-
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
+#include <TGUI/Backend/SFML-Graphics.hpp>
 
 class UI{
+
+
     private:
+        sf::RenderWindow& window;
+        tgui::Gui gui;
+        sf::Vector2u winSize;
+        float scale;
 
+        // Parametry layoutu menu (procenty wymiarów okna)
+        float menuButtonW_Pct;
+        float menuButtonH_Pct;
+        float menuStartY_Pct;
+        float menuSpacingY_Pct;
+        float menuTitleHeight_Pct;
+        float menuTitleTopMargin_Pct;
     public:
-        UI::UI();
-        void drawBoard();
-        void movePiece(Position from, Position to);
-        void deletePiece(Position pos);
-        void drawPromotionChoise();
-        void drawAvailableMoves(const std::vector<Position>& moves);                   
-        void drawMenu();
-        void drawEndGame();
-        void drawSidePanel();
+        UI(sf::RenderWindow& window);
 
-};
+        /// Powinno być wywoływane przy zmianie rozdzielczości
+        void onResize(const sf::Vector2u& newSize);
+
+        /// Obsługa zdarzeń SFML (przekazanie do TGUI, custom klicki)
+        void handleEvent(const sf::Event& evt);
+
+        /// Rysuje główne menu z tytułem i przyciskami
+        void drawMenu();
+
+        void draw();
+    };
 
 #endif
