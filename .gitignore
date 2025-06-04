@@ -1,0 +1,28 @@
+/build/
+/CMakeFiles/
+/compile_commands.json
+CMakeCache.txt
+
+# Kompilaty C/C++
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.gch
+*.pch
+
+# Pliki dziennika, pliki tymczasowe edytorów
+*.log
+*.tmp
+*.swp
+*.DS_Store
+
+# ===============================
+# 2. Biblioteki SFML i TGUI (zeźródło)
+# ===============================
+/libs/SFML/
+/libs/TGUI/tgui-build/
