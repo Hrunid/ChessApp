@@ -3,7 +3,7 @@
 /compile_commands.json
 CMakeCache.txt
 
-# Kompilaty C/C++
+
 *.o
 *.obj
 *.exe
@@ -15,14 +15,13 @@ CMakeCache.txt
 *.gch
 *.pch
 
-# Pliki dziennika, pliki tymczasowe edytorów
+
 *.log
 *.tmp
 *.swp
 *.DS_Store
 
-# ===============================
-# 2. Biblioteki SFML i TGUI (zeźródło)
-# ===============================
 /libs/SFML/
-/libs/TGUI/tgui-build/
+/libs/TGUI/
+
+.vscode
