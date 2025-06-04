@@ -1,7 +1,7 @@
 #ifndef SINGLEPLAYER_H
 #define SINGLEPLAYER_H
 
-#include "Game.h"
+#include "Game.hpp"
 
 class SinglePlayer : public Game{
 

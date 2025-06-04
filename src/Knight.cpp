@@ -1,5 +1,5 @@
-#include "Knight.h"
-#include "Board.h"
+#include "Knight.hpp"
+#include "Board.hpp"
 
 Knight::Knight(int id, bool isWhite, Position currentPosition)
     :   Piece(id, 'N', isWhite, currentPosition, { {1, 2}, {1, -2}, {2, 1}, {2, -1}, {-1, 2}, {-1, -2}, {-2, 1}, {-2, -1} })

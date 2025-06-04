@@ -1,17 +1,18 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "Piece.h"
-#include "Square.h"
-#include "Player.h"
-#include "Position.h"
-#include "Pin.h"
-#include "Move.h"
+#include "Piece.hpp"
+#include "Square.hpp"
+#include "Player.hpp"
+#include "Position.hpp"
+#include "Pin.hpp"
+#include "Move.hpp"
 
 #include <memory>
 #include <vector>
 #include <cstdlib>
 #include <string>
+#include <span>
 
 class Board{
     private:
@@ -46,7 +47,7 @@ class Board{
         void generateRandNumbers();
         
     public:
-        Board();
+        Board(Player* whitePlayer, Player* blackPlayer);
         ~Board();
         void setPlayerPtr(Player* player, bool isWhite);
         Piece& getPieceById(int id);
@@ -64,12 +65,7 @@ class Board{
         std::string convertToFEN();
         void removePieceFromSquares(int pieceId);
         uint64_t zobristHash(bool blackPlayer, std::pair<bool, int> enPassant);
-
-
-        
-        
-        
-        
+        std::span<const std::unique_ptr<Square>> getBoardView();        
 
 };
 

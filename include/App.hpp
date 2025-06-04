@@ -1,14 +1,17 @@
 #ifndef APP_H
 #define APP_H
 
-#include "UI.h"
-#include "Game.h"
+#include "UI.hpp"
+#include "Game.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <memory>
 
 enum AppSate{
-    mainMenu,
+    MainMenu,
+        
+    InGame,
+    Settings
 
 };
 
@@ -17,12 +20,15 @@ class App{
         sf::RenderWindow window;
         std::unique_ptr<UI> ui;
         std::unique_ptr<Game> game;
+        AppSate state;
+
+        void drawUI();
 
     public:
         App();
         void run();
-        void startNewGame();
-        void endGame();
+        void startNewGame(GameType type);
+        void setAppState(AppSate newState);
 
 };
 

@@ -1,7 +1,7 @@
 #ifndef MOVE_H
 #define MOVE_H
 
-#include "Position.h"
+#include "Position.hpp"
 
 #include <string>
 

@@ -1,8 +1,8 @@
 #ifndef PIECE_H
 #define PIECE_H
 
-#include "Position.h"
-#include "Pin.h"
+#include "Position.hpp"
+#include "Pin.hpp"
 
 #include <vector>
 #include <iostream>

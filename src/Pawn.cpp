@@ -1,5 +1,5 @@
-#include "Pawn.h"
-#include "Board.h"
+#include "Pawn.hpp"
+#include "Board.hpp"
 
 Pawn::Pawn(int id, bool isWhite, Position currentPosition)
     :   Piece(id, 'P', isWhite, currentPosition,
