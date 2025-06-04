@@ -1,8 +1,8 @@
 #ifndef PAWN_H
 #define PAWN_H
 
-#include "Piece.h"
-#include "Move.h"
+#include "Piece.hpp"
+#include "Move.hpp"
 
 #include <functional>
 

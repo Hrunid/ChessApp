@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Position.h"
+#include "Position.hpp"
 
 #include <vector>
 

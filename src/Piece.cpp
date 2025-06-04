@@ -1,5 +1,5 @@
-#include "Piece.h"
-#include "Board.h"
+#include "Piece.hpp"
+#include "Board.hpp"
 
 Piece::Piece(int id, char symbol, bool isWhite, Position currentPosition, const std::vector<std::pair<int, int>>& moveDirections)
     :   id(id),

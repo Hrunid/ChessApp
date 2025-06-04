@@ -1,18 +1,18 @@
-#include "Board.h"
-#include "King.h"
-#include "Bishop.h"
-#include "Queen.h"
-#include "Pawn.h"
-#include "Rook.h"
-#include "Knight.h"
+#include "Board.hpp"
+#include "King.hpp"
+#include "Bishop.hpp"
+#include "Queen.hpp"
+#include "Pawn.hpp"
+#include "Rook.hpp"
+#include "Knight.hpp"
 
 #include <random>
 #include <limits>
 
-Board::Board()
+Board::Board(Player* whitePlayer, Player* blackPlayer)
     :   pins(),
-        whitePlayer(nullptr),
-        blackPlayer(nullptr)
+        whitePlayer(whitePlayer),
+        blackPlayer(blackPlayer)
 
 {
             
@@ -547,3 +547,8 @@ void Board::generateRandNumbers(){
     blackPlayerKey = random64BitNum();
 
 }
+
+std::span<const std::unique_ptr<Square>> getBoardView() const{
+    return {&squares[0][0], 64};
+}
+

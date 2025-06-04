@@ -1,5 +1,5 @@
-#include "Game.h"
-#include "Pawn.h"
+#include "Game.hpp"
+#include "Pawn.hpp"
 
 Game::Game()
     :   moveHistory(),
@@ -7,14 +7,14 @@ Game::Game()
         moveCount(0),
         selectedPiece(-1),
         currentPlayer(0),
-        boringMoves(0)
+        boringMoves(0),
+        state(StartScreen)
     {
-        board = std::make_unique<Board>();
         players[0] = std::make_unique<Player>(0, true);
         players[1] = std::make_unique<Player>(16, false);
+        board = std::make_unique<Board>(players[0].get(), players[1].get());
         
-        board->setPlayerPtr(players[0].get(), true);
-        board->setPlayerPtr(players[1].get(), false);
+        
         players[0]->setBoardPtr(board.get());
         players[1]->setBoardPtr(board.get());
     }
@@ -81,7 +81,7 @@ Move Game::createMove(Position from, Position to){
 void Game::checkGameState(){
     
     if(threeTimeRepetition() || fiftyMoveRule()){
-        endGame(DRAW);
+        endGame(Draw);
     }
     else{
         if(players[currentPlayer]->isPlayerInCheck()){
@@ -92,7 +92,7 @@ void Game::checkGameState(){
             }
             else{
                 moveHistory.back().setMate(true);
-                endGame(LOSS);
+                endGame(Loss);
             }
         }
         else if(players[currentPlayer]->hasPlayerMoves()){
@@ -101,12 +101,12 @@ void Game::checkGameState(){
                 board->updatePieces(playersPieces);
             }
             if(!players[currentPlayer]->hasEnoughMaterial()){
-                endGame(DRAW);
+                endGame(Draw);
             }
 
         }
         else{
-            endGame(DRAW);
+            endGame(Draw);
         }
     }
 }
@@ -157,3 +157,33 @@ bool Game::fiftyMoveRule(){
 void Game::runStockfish(){
     
 }
+
+GameState Game::getGameState(){
+    return state;
+}
+
+int Game::getSelectedPiece(){
+    return selectedPiece;
+}
+
+const Piece& Game::getPieceById(int pieceId){
+    return board->getPieceById(pieceId);
+}
+
+const Player& Game::getCurrentPlayer(){
+    return *players[currentPlayer];
+}
+
+GameType Game::getGameType(){
+    return type;
+}
+
+void Game::setGameState(GameState newState){
+    state = newState;
+}
+
+std::span<const std::unique_ptr<Square>> Game::boardView() const{
+    return board->getBoardView();
+}
+
+

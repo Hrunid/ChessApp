@@ -1,5 +1,5 @@
-#include "King.h"
-#include "Board.h"
+#include "King.hpp"
+#include "Board.hpp"
 
 King::King(int id, bool isWhite, Position currentPosition)
     :   Piece(id, 'K', isWhite, currentPosition, { {1, 0}, {-1 ,0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1} })
@@ -38,7 +38,7 @@ void King::calculateAvailableMoves(){
             }
         }
     }
-
+    
     for(int i = 0; i < 2; i++){
         int dx = moveDirections[i].first;
         if(board->canPlayerCastle(this->isWhite, dx)){

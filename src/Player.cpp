@@ -1,5 +1,5 @@
-#include "Player.h"
-#include "Board.h"
+#include "Player.hpp"
+#include "Board.hpp"
 
 Player::Player(int kingId, bool isWhite)
     :   kingId(kingId),
@@ -84,27 +84,32 @@ void Player::removePlayerPiece(int pieceToRemove){
 }
 
 bool Player::canPlayerCastle(int dx){
-    if(isPlayerInCheck()){
-        return false;
-    }
-    else if(board->getPieceById(kingId).hasPieceMoved()){            
-        return false;
-    }
-    int rookX;
-    if(dx > 0) rookX = 7;
-    else{
-        rookX = 0;
-    }
-    Position tempPosition(rookX, board->getPieceById(kingId).getPosition().y);
-    if(!board->isSquareEmpty(tempPosition)){
-        int tempPieceId = board->getPieceIdAtPosition(tempPosition);
-        char tempSymb = board->getPieceById(tempPieceId).getSymbol();
-        bool tempHasMoved = board->getPieceById(tempPieceId).hasPieceMoved();
-        if(tempSymb == 'R' && !tempHasMoved){
-            return true;
+    if(board != nullptr){
+        if(isPlayerInCheck()){
+            return false;
         }
+        else if(board->getPieceById(kingId).hasPieceMoved()){            
+            return false;
+        }
+        int rookX;
+        if(dx > 0) rookX = 7;
+        else{
+            rookX = 0;
+        }
+        Position tempPosition(rookX, board->getPieceById(kingId).getPosition().y);
+        if(!board->isSquareEmpty(tempPosition)){
+            int tempPieceId = board->getPieceIdAtPosition(tempPosition);
+            char tempSymb = board->getPieceById(tempPieceId).getSymbol();
+            bool tempHasMoved = board->getPieceById(tempPieceId).hasPieceMoved();
+            if(tempSymb == 'R' && !tempHasMoved){
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
+    else{
+        return false;
+    }
 }
 
 
