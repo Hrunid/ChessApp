@@ -23,22 +23,6 @@ UI::UI(sf::RenderWindow& wnd, App& app)
     gui.add(boardContainer);
 }
 
-/*void UI::onResize(const sf::Vector2u& newSize)
-{
-    winSize = newSize;
-    // Ustaw view na pełne okno
-    sf::FloatRect area(0, 0, winSize.x, winSize.y);
-    window.setView(sf::View(area));
-
-    // Przelicz scale
-    const unsigned BASE_W = 1280, BASE_H = 720;
-    scale = std::min(winSize.x / static_cast<float>(BASE_W),
-                     winSize.y / static_cast<float>(BASE_H));
-
-    // Odtwórz layout
-    drawMenu();
-}*/
-
 void UI::handleEvent(const sf::Event& evt)
 {
     // Przekaż event do TGUI
