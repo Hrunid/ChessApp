@@ -8,7 +8,7 @@ Game::Game()
         selectedPiece(-1),
         currentPlayer(0),
         boringMoves(0),
-        state(StartScreen)
+        state(Running)
     {
         players[0] = std::make_unique<Player>(0, true);
         players[1] = std::make_unique<Player>(16, false);

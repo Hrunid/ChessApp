@@ -4,34 +4,27 @@ App::App()
     :   window(sf::VideoMode({1280, 720}), "Chess"),
         game(nullptr),
         ui(std::make_unique<UI>(window, *this)),
-        state(MainMenu)
+        state(MainMenu),
+        menuDrawn(false)
     {
-        window.setFramerateLimit(144);
+        window.setFramerateLimit(60);
+        ui->drawMenu();
     }
 
 void App::run(){
     while(window.isOpen()){
-        while(auto optEvent = window.pollEvent()){
-            const sf::Event& event = *optEvent;
-            if(event.is<sf::Event::Closed>()){
+        while(const std::optional event = window.pollEvent()){
+            if(event->is<sf::Event::Closed>()){
                 window.close();
             }
-            else if(event.is<sf::Event::Resized>()){
-                ui->onResize(window.getSize());
-            }
             else{
-                ui->handleEvent(event);
+                ui->handleEvent(*event);
             }
         }
-
         window.clear();
         drawUI();
-        startNewGame(TwoPlayers);
-        ui->draw();
         window.display();
     }
-
-    
 }
 
 void App::startNewGame(GameType type){
@@ -62,8 +55,9 @@ void App::drawUI(){
             game->setGameState(Running);
         }
         else if(gameState == Running){
-            ui->drawBoard();
-            ui->drawSidePanel();
+            ui->showMenu(false);
+            ui->drawBoard(true);
+            //ui->drawSidePanel();
             if(int pieceId = game->getSelectedPiece(); pieceId != -1){
                 ui->drawAccessibleSquares((game->getPieceById(pieceId)).getAvailableMoves());
             }
@@ -74,7 +68,7 @@ void App::drawUI(){
         }
         else if (gameState == GameEnded)
         {
-            ui->drawBoard();
+            ui->drawBoard(true);
             ui->drawEndGamePanel();
         }
         
@@ -84,6 +78,6 @@ void App::drawUI(){
     }
 }
 
-void App::setAppState(AppSate newState){
-    state = newState;
+void App::setAppState(AppState newState){
+    this->state = newState;
 }

@@ -4,7 +4,6 @@
 #include "Position.hpp"
 #include "Square.hpp"
 
-
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
@@ -24,10 +23,14 @@ class UI{
         sf::Vector2u winSize;
         float scale;
         App& app;
+
         std::span<const std::unique_ptr<Square>> boardView;
         tgui::Group::Ptr boardContainer;
+        tgui::Button::Ptr boardButtons[8][8];
         
-        // Parametry layoutu menu (procenty wymiarów okna)
+        tgui::Container::Ptr menu;
+        tgui::Container::Ptr menuButtons;
+        
         float menuButtonW_Pct;
         float menuButtonH_Pct;
         float menuStartY_Pct;
@@ -36,19 +39,14 @@ class UI{
         float menuTitleTopMargin_Pct;
     public:
         UI(sf::RenderWindow& window, App& app);
-
-        /// Powinno być wywoływane przy zmianie rozdzielczości
-        void onResize(const sf::Vector2u& newSize);
-
-        /// Obsługa zdarzeń SFML (przekazanie do TGUI, custom klicki)
         void handleEvent(const sf::Event& evt);
-
-        /// Rysuje główne menu z tytułem i przyciskami
         void drawMenu();
         void drawGameSettings();
         void draw();
         void drawEndGamePanel();
-        void drawBoard();
+        void drawBoard(bool whiteSide);
+        void showMenu(bool visible);
+        void showBoard(bool visible);
         void drawSidePanel();
         void drawAccessibleSquares(std::vector<Position> squares);
 

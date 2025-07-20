@@ -8,6 +8,7 @@
 
 #include <random>
 #include <limits>
+#include <span>
 
 Board::Board(Player* whitePlayer, Player* blackPlayer)
     :   pins(),
@@ -548,7 +549,7 @@ void Board::generateRandNumbers(){
 
 }
 
-std::span<const std::unique_ptr<Square>> getBoardView() const{
-    return {&squares[0][0], 64};
+std::span<const std::unique_ptr<Square>> Board::getBoardView() const{
+    return std::span<const std::unique_ptr<Square>>(&squares[0][0], 8 * 8);
 }
 

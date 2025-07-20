@@ -65,7 +65,7 @@ class Board{
         std::string convertToFEN();
         void removePieceFromSquares(int pieceId);
         uint64_t zobristHash(bool blackPlayer, std::pair<bool, int> enPassant);
-        std::span<const std::unique_ptr<Square>> getBoardView();        
+        std::span<const std::unique_ptr<Square>> getBoardView() const;        
 
 };
 
