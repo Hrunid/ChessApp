@@ -10,14 +10,11 @@ void King::calculateAvailableMoves(){
     availableMoves.clear();
     seenBlockedSquares.clear();
 
-    for(auto [dx, dy] : moveDirections){
-        int x = currentPosition.x;
-        int y = currentPosition.y;
-
-        x += dx;
-        y += dy;
+    for(auto dir : moveDirections){
+        Position tempPosition = currentPosition;
+        tempPosition += dir;
         
-        if(Position tempPosition(x, y); board->isOnBoard(tempPosition)){
+        if(board->isOnBoard(tempPosition)){
             if(isSquareSafe(tempPosition)){
                 if(board->isSquareEmpty(tempPosition)){
                     availableMoves.push_back(tempPosition);

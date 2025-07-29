@@ -2,7 +2,7 @@
 
 #include <string>
 
-Move::Move(Position to, Position from, char movedPieceSymbol)
+Move::Move(Position from, Position to, char movedPieceSymbol, bool promotion, char newPieceSymb)
     :   to(to),
         from(from),
         pieceSymbol(movedPieceSymbol),

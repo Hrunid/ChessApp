@@ -15,8 +15,7 @@ class Player{
         std::vector<int> piecesId;
         Board* board;
 
-        std::vector<Position> getCheckLine(Position start, Position end);
-        
+        std::vector<Position> getCheckLine(Position start, Position end, char aSymb) const;        
     public:
         Player(int kingId, bool isWhite);
         ~Player();

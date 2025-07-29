@@ -2,8 +2,8 @@
 
 App::App()
     :   window(sf::VideoMode({1280, 720}), "Chess"),
-        game(nullptr),
-        ui(std::make_unique<UI>(window, *this)),
+        ui(std::make_unique<UI>(window, *this)),        
+        game(),
         state(MainMenu),
         menuDrawn(false)
     {
@@ -30,8 +30,10 @@ void App::run(){
 void App::startNewGame(GameType type){
     setAppState(InGame);
     if(type == TwoPlayers){
-        game = std::make_unique<Game>();
+        game = std::make_unique<Game>(type, *ui);
         ui->setBoardView(game->boardView());
+        ui->setPieceView(game->pieceView());
+        ui->setGamePtr(game.get());
     }
     else if(type == AnalisysMode){
         // new
@@ -56,7 +58,7 @@ void App::drawUI(){
         }
         else if(gameState == Running){
             ui->showMenu(false);
-            ui->drawBoard(true);
+            ui->drawBoard();
             //ui->drawSidePanel();
             if(int pieceId = game->getSelectedPiece(); pieceId != -1){
                 ui->drawAccessibleSquares((game->getPieceById(pieceId)).getAvailableMoves());
@@ -68,7 +70,7 @@ void App::drawUI(){
         }
         else if (gameState == GameEnded)
         {
-            ui->drawBoard(true);
+            ui->drawBoard();
             ui->drawEndGamePanel();
         }
         

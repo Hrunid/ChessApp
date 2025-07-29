@@ -74,13 +74,7 @@ bool Player::hasPlayerMoves(){
 }
 
 void Player::removePlayerPiece(int pieceToRemove){
-    for(int i=0; i < piecesId.size(); i++){
-        int pieceId = piecesId[i];
-        if(pieceId == pieceToRemove){
-            piecesId.erase(piecesId.begin() + i);
-            break;
-        } 
-    }
+    piecesId.erase(std::remove(piecesId.begin(), piecesId.end(), pieceToRemove), piecesId.end());
 }
 
 bool Player::canPlayerCastle(int dx){
@@ -123,66 +117,50 @@ void Player::applyCheckRestrictions(){
     if(numOfChecks >= 2){
         for(int pieceId : piecesId){
             board->getPieceById(pieceId).clearMoves();
-
         }
-        board->getPieceById(kingId).calculateAvailableMoves();
-
+        board->updatePieces({kingId});
     }
     else if(numOfChecks == 1){
         Position kingPosition = board->getPieceById(kingId).getPosition();
         int attackingPieceId;
         const std::vector<int>& attackingPiecesId = board->getSquareAtPosition(kingPosition).getPiecesWithAcces();
-
-        for(int id : attackingPiecesId){
-            if(isWhite != board->getPieceById(id).isPieceWhite()){
-                attackingPieceId = id;
-                break;
+        std::vector<int>::const_iterator it = std::find_if(
+            attackingPiecesId.begin(),
+            attackingPiecesId.end(),
+            [&](int id) {
+                return isWhite != board->getPieceById(id).isPieceWhite();
             }
-        }
-
+        );
+        attackingPieceId = *it;
         char attackingPieceSymbol = board->getPieceById(attackingPieceId).getSymbol();
         Position attackingPiecePosition = board->getPieceById(attackingPieceId).getPosition();
-        std::vector<Position> checkLine = getCheckLine(attackingPiecePosition, kingPosition);
-
-        for(int id : piecesId){
-            board->removePieceFromSquares(id);
-            board->getPieceById(id).clearMoves();
-        }
-
-        for(Position pos : checkLine){
-            const std::vector<int>& attackingPieceId = board->getSquareAtPosition(pos).getPiecesWithAcces();
-            for(int id : attackingPieceId){
-                if(isWhite == board->getPieceById(id).isPieceWhite()){
-                    board->getPieceById(id).addMove(pos);
+        std::vector<Position> checkLine = getCheckLine(attackingPiecePosition, kingPosition, attackingPieceSymbol);
+        for(auto it = piecesId.begin() + 1; it != piecesId.end(); ++it){
+            int id = *it;
+            Piece& piece = board->getPieceById(id);
+            for(Position pos : piece.getAvailableMoves()){
+                if(std::find(checkLine.begin(), checkLine.end(), pos) == checkLine.end()){
+                    board->removePieceFromPosition(id, pos);
+                    piece.removeMove(pos);
                 }
             }
-
         }
-
+        board->updatePieces({kingId});
     }
 }
 
-// Trzeba poprawić metodę szacha - król jest uwzgledniony jako figura, która może się poruszyć wzdłuż linii szacha, co jest niepoprawne.
-
-std::vector<Position> Player::getCheckLine(Position start, Position end){
+std::vector<Position> Player::getCheckLine(Position start, Position end, char aSymb) const{
     std::vector<Position> checkLine;
-    std::pair<int, int> direction = board->calculateDirection(start, end);
-
-    checkLine.push_back(start);
-
-    int x = start.x;
-    int y = start.y;
-    int dx = direction.first;
-    int dy = direction.second;
-    int x2 = end.x;
-    int y2 = end.y;
-    while(x != x2 || y != y2){
-        x += dx;
-        y += dy;
-        Position tempPosition(x, y);
-        checkLine.push_back(tempPosition);
+    if(aSymb == 'N'){
+        checkLine = {start};
     }
-
+    else{
+        std::pair<int, int> direction = board->calculateDirection(start, end);
+        while(start != end){
+            checkLine.push_back(start);
+            start += direction;
+        }
+    }
     return checkLine;
 }
 

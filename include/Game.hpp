@@ -5,6 +5,7 @@
 #include "Move.hpp"
 #include "Board.hpp"
 #include "Square.hpp"
+#include "UI.hpp"
 
 #include <memory>
 #include <string>
@@ -32,7 +33,7 @@ enum GameState{
 
 class Game{
     protected:
-        std::unique_ptr<Player> players[2];
+        std::array<std::unique_ptr<Player>, 2> players;
         std::unique_ptr<Board> board;
         std::vector<Move> moveHistory;
         std::unordered_map<int, int> positionHistory;
@@ -42,18 +43,18 @@ class Game{
         int boringMoves;
         GameState state;
         GameType type;
-
-        void runStockfish();
-        Move createMove(Position from, Position to);
+        UI& ui;
+        virtual void runStockfish();
+        Move createMove(Position from, Position to, bool promotion = false, char promPiece = '\0');
         Move createMoveFromAiRespone(std::string response);
         void writePosition(std::string fen);
         void pgnToMoves(std::string pgn);      
-        void executeTurn(Position from, Position to);
+        void executeTurn(Position from, Position to, bool promotion = false, char promPiece = '\0');
         void checkGameState();
         bool threeTimeRepetition();
         bool fiftyMoveRule();
     public:
-        Game();
+        Game(GameType type, UI& uiReff);
         virtual ~Game() = default;
 
         void startGame();
@@ -61,14 +62,15 @@ class Game{
         void nextMove();
         void endGame(Result res);
         void processClick(Position click);
-        GameState getGameState();
-        int getSelectedPiece();
+        void promote(Position from, Position to, char symb);
+        GameState getGameState() const;
+        int getSelectedPiece() const;
         const Piece& getPieceById(int pieceId);
         const Player& getCurrentPlayer();
         GameType getGameType();
         void setGameState(GameState newState);
         std::span<const std::unique_ptr<Square>> boardView() const;
-
+        std::span<const std::unique_ptr<Piece>> pieceView() const;
 };
 
 #endif

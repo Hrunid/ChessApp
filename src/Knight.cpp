@@ -7,16 +7,9 @@ Knight::Knight(int id, bool isWhite, Position currentPosition)
 
 
 void Knight::findMovesInDirection(std::pair<int, int> direction){
-    int x = currentPosition.x;
-    int y = currentPosition.y;
 
-    int dx = direction.first;
-    int dy = direction.second;
-
-    x += dx;
-    y += dy;
-
-    Position tempPosition(x, y);
+    Position tempPosition = currentPosition;
+    tempPosition += direction;
 
     if(board->isOnBoard(tempPosition)){
         if(board->isSquareEmpty(tempPosition)){
@@ -36,6 +29,6 @@ void Knight::findMovesInDirection(std::pair<int, int> direction){
 
 }
 
-void Knight::scanForPin(Position startPosition, int dx, int dy){
+void Knight::scanForPin(Position startPosition, std::pair<int, int> dir){
     
 }

@@ -9,26 +9,27 @@
 #include <random>
 #include <limits>
 #include <span>
+#include <iostream>
+#include <optional>
+#include <exception>
+#include <ranges>
 
-Board::Board(Player* whitePlayer, Player* blackPlayer)
+Board::Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move> moveHis)
     :   pins(),
         whitePlayer(whitePlayer),
-        blackPlayer(blackPlayer)
+        blackPlayer(blackPlayer),
+        moveHistory(moveHis)
 
 {
             
     Piece::setBoardPtr(this);
-
     createSquares();
     setUpPieces();
-
-
     for(int i = 0; i < 32; i++){
         allPieces[i]->calculateAvailableMoves();
-        int id = allPieces[i]->getId();
-        addPieceToSquares(id);
+        addPieceToSquares(i);
     }
-            
+    generateRandNumbers();
 }
 
 Board::~Board(){
@@ -42,7 +43,7 @@ void Board::makeMove(const Move& move){
     Position to = move.getPositionTo();
 
     int movedPieceId = getPieceIdAtPosition(from);
-    Position tempPositionToUpdate(-1, -1);                        
+    std::optional<Position> tempPositionToUpdate;                  
     if(move.capture()){
         capture(to);
     }
@@ -55,26 +56,25 @@ void Board::makeMove(const Move& move){
     else if(move.promotion()){
         promotion(movedPieceId, move.getPromotionPieceSymbol());
     }
+    std::vector<int> accessFrom = getSquareAtPosition(from).getPiecesWithAcces();
+    std::vector<int> accessTo = getSquareAtPosition(to).getPiecesWithAcces();
 
     movePiece(from ,to);
-    if(tempPositionToUpdate.x != -1 && tempPositionToUpdate.y != -1){
-        updatePiecesAtPosition(tempPositionToUpdate);
+    if (tempPositionToUpdate.has_value() && isOnBoard(*tempPositionToUpdate)) {
+        updatePiecesAtPosition(*tempPositionToUpdate);
     }
-    updatePiecesAtPosition(from);
-    updatePiecesAtPosition(to);
     
-
+    updatePieces(accessFrom);
+    updatePieces(accessTo);
 }
 
 void Board::updatePiecesAtPosition(Position pos){
     const std::vector<int>& piecesWithAccess = getSquareAtPosition(pos).getPiecesWithAcces();
     updatePieces(piecesWithAccess);
-
 }
 
-bool Board::isSquareEmpty(Position pos){
-    
-    if(int pieceIdAtPosition = getSquareAtPosition(pos).getCurrentPieceId(); pieceIdAtPosition == -1){
+bool Board::isSquareEmpty(Position pos) const{
+    if(squares[pos.x][pos.y]->getCurrentPieceId() == -1){
         return true;
     }
     else{
@@ -83,11 +83,17 @@ bool Board::isSquareEmpty(Position pos){
 }
 
 Piece& Board::getPieceById(int id){
+    if(id < 0 || id > 31){
+        throw std::out_of_range("Error Board::getPieceById() Piece index out of range!\n");
+    }
+    if(!allPieces[id]){
+        throw std::invalid_argument("Error Board::getPieceById() Piece by index " + std::to_string(id) + " does not exist! (nullptr)");
+    }
     return *allPieces[id];
 }
 
-int Board::getPieceIdAtPosition(Position pos){
-    return getSquareAtPosition(pos).getCurrentPieceId();
+int Board::getPieceIdAtPosition(Position pos) const{
+    return squares[pos.x][pos.y]->getCurrentPieceId();
 }
 
 void Board::createSquares(){
@@ -104,26 +110,18 @@ void Board::updatePieces(const std::vector<int>& piecesToUpdate){
         allPieces[pieceId]->calculateAvailableMoves();
         addPieceToSquares(pieceId);
     }
-    
 }
 
 bool Board::isPinCurrent(Pin pin){
     int pinning = pin.pinningPieceId;
     int pinned = pin.pinnedPieceId;
 
-    Position startPosition = getPieceById(pinning).getPosition();
-    int x = startPosition.x;
-    int y = startPosition.y;
-    int dx = pin.pinningPieceDirection.first;
-    int dy = pin.pinningPieceDirection.second;
+    Position tempPosition = getPieceById(pinning).getPosition();
+    const std::pair<int, int>& direction = pin.pinningPieceDirection;
 
     while(true){
-        x += dx;
-        y += dy;
-
-        
-
-        if(Position tempPosition(x, y); !isOnBoard(tempPosition)){
+        tempPosition += direction;
+        if(!isOnBoard(tempPosition)){
             break;
         }
         else if(!isSquareEmpty(tempPosition)){
@@ -135,20 +133,23 @@ bool Board::isPinCurrent(Pin pin){
                 return false;
             }
         }
-           
     }
     return false;
-
 }
 
 Square& Board::getSquareAtPosition(Position pos){
-    int x = pos.x;
-    int y = pos.y;
-    return *squares[x][y];
+    if(isOnBoard(pos)){
+        int x = pos.x;
+        int y = pos.y;
+        return *squares[x][y];
+    }
+    else{
+        throw std::invalid_argument("Square array invalid index!");
+    }
 }
 
 void Board::removePieceFromSquares(int pieceId){
-    const std::vector<Position>& pieceSquares = getPieceById(pieceId).getAvailableMoves();
+    const std::vector<Position>& pieceSquares = allPieces[pieceId]->getAvailableMoves();
     for(auto position : pieceSquares){
         getSquareAtPosition(position).removeAttacker(pieceId);
     }
@@ -172,24 +173,31 @@ void Board::addPieceToSquares(int pieceId){
 void Board::movePiece(Position from, Position to){
     int pieceToMoveId = getPieceIdAtPosition(from);
     allPieces[pieceToMoveId]->setPosition(to);
+    getPieceById(pieceToMoveId).pieceHasMoved();
     getSquareAtPosition(from).setCurrentPiece(-1);
+    getSquareAtPosition(to).setCurrentPiece(pieceToMoveId);
 }
 
 void Board::capture(Position pieceToCapturePosition){
+    try{
+        int pieceId = getPieceIdAtPosition(pieceToCapturePosition);
+        bool isWhite = getPieceById(pieceId).isPieceWhite();
 
-    int pieceId = getPieceIdAtPosition(pieceToCapturePosition);
-    bool isWhite = getPieceById(pieceId).isPieceWhite();
+        if(isWhite){
+            whitePlayer->removePlayerPiece(pieceId);
+        }
+        else{
+            blackPlayer->removePlayerPiece(pieceId);
+        }
 
-    if(isWhite){
-        whitePlayer->removePlayerPiece(pieceId);
+        getSquareAtPosition(pieceToCapturePosition).setCurrentPiece(-1);
+        removePieceFromSquares(pieceId);
+        allPieces[pieceId] = nullptr;
     }
-    else{
-        blackPlayer->removePlayerPiece(pieceId);
+    catch (const std::runtime_error& e) {
+        std::cout << "Board::capture(Position pieceToCapturePosition) Error: " << e.what() << std::endl;
     }
-
-    getSquareAtPosition(pieceToCapturePosition).setCurrentPiece(-1);
-    removePieceFromSquares(pieceId);
-    allPieces[pieceId] = nullptr;
+    
 
 }
 
@@ -216,7 +224,6 @@ Position Board::castle(Position from, Position to){
     Position newRookPosition(from.x + dx, from.y);
     movePiece(rookPosition, newRookPosition);
     return newRookPosition;
-
 }
 
 Position Board::enPassant(Position from, Position to){
@@ -233,7 +240,7 @@ Position Board::enPassant(Position from, Position to){
     return tempPosition;
 }
 
-bool Board::canPlayerCastle(bool isWhite, int dx){
+bool Board::canPlayerCastle(bool isWhite, int dx) const{
     if(isWhite){
         return whitePlayer->canPlayerCastle(dx);
     }
@@ -245,7 +252,11 @@ bool Board::canPlayerCastle(bool isWhite, int dx){
 void Board::updatePins(){
     for(int i = pins.size() - 1; i >= 0; i--){
         Pin tempPin = pins[i];
-        if(!isPinCurrent(tempPin)){
+        if(!allPieces[tempPin.pinningPieceId]){
+            pins.erase(pins.begin() + i);
+            allPieces[tempPin.pinnedPieceId]->setPin(false);
+        }
+        else if(!isPinCurrent(tempPin)){
             int pinningPieceId = tempPin.pinningPieceId;
             int pinnedPieceId = tempPin.pinnedPieceId;
 
@@ -254,9 +265,6 @@ void Board::updatePins(){
             allPieces[pinnedPieceId]->calculateAvailableMoves();
 
             pins.erase(pins.begin() + i);
-            
-
-            
         }
     }
 }
@@ -265,25 +273,18 @@ void Board::addPin(Pin newPin){
     pins.push_back(newPin);
 }
 
-bool Board::isOnBoard(Position pos){
+bool Board::isOnBoard(Position pos) const{
     int x = pos.x;
     int y = pos.y;
-
     if(x < 0 || x > 7 || y < 0 || y > 7){
         return false;
     }
-    
     return true;
 }
 
-std::pair<int, int> Board::calculateDirection(Position from, Position to){
-    int x1 = from.x;
-    int y1 = from.y;
-    int x2 = to.x;
-    int y2 = to.y;
-
-    int dx = x2 - x1;
-    int dy = y2 - y1;
+std::pair<int, int> Board::calculateDirection(Position from, Position to) const{
+    int dx = to.x - from.x;
+    int dy = to.y - from.y;
     if(dx != 0){
         dx = dx / std::abs(dx);
     }
@@ -291,7 +292,6 @@ std::pair<int, int> Board::calculateDirection(Position from, Position to){
         dy = dy / std::abs(dy);
     }
     return std::make_pair(dx, dy);
-    
 }
 
 const std::vector<Pin>& Board::getPins() const{
@@ -301,7 +301,7 @@ const std::vector<Pin>& Board::getPins() const{
 std::string Board::convertToFEN(){
     std::string FEN = "";
     int emptySquaresCount;
-    for(int i = 7; i >= 0; i--){
+    for(int i = 0; i < 8; i++){
         emptySquaresCount = 0;
         for(int j = 0; j <= 7; j++){
             if(isSquareEmpty(Position(j, i))){
@@ -335,8 +335,35 @@ std::string Board::convertToFEN(){
 void Board::setUpPieces(){
     bool color = true;
     int id = 0;
-
     // White player
+    createPiece(id, 'K', color, Position(4, 7));
+    id++;
+
+    for (int i = 0; i < 8; i++){
+        createPiece(id, 'P', color, Position(i, 6));
+        id++;
+    }
+
+    createPiece(id, 'B', color, Position(2, 7));
+    id++;
+    createPiece(id, 'B', color, Position(5, 7));
+    id++;
+
+    createPiece(id, 'R', color, Position(0, 7));
+    id++;
+    createPiece(id, 'R', color, Position(7, 7));
+    id++;
+
+    createPiece(id, 'N', color, Position(1, 7));
+    id++;
+    createPiece(id, 'N', color, Position(6, 7));
+    id++;
+
+    createPiece(id, 'Q', color, Position(3, 7));
+    id++;
+
+    // Black player
+    color = false;
 
 
     createPiece(id, 'K', color, Position(4, 0));
@@ -357,43 +384,13 @@ void Board::setUpPieces(){
     createPiece(id, 'R', color, Position(7, 0));
     id++;
 
+
     createPiece(id, 'N', color, Position(1, 0));
     id++;
     createPiece(id, 'N', color, Position(6, 0));
     id++;
 
     createPiece(id, 'Q', color, Position(3, 0));
-    id++;
-
-    // Black player
-    color = false;
-
-
-    createPiece(id, 'K', color, Position(4, 7));
-    id++;
-
-    for (int i = 0; i < 8; i++){
-        createPiece(id, 'P', color, Position(i, 6));
-        id++;
-    }
-
-    createPiece(id, 'B', color, Position(2, 7));
-    id++;
-    createPiece(id, 'B', color, Position(5, 7));
-    id++;
-
-    createPiece(id, 'R', color, Position(0, 7));
-    id++;
-    createPiece(id, 'R', color, Position(7, 7));
-    id++;
-
-
-    createPiece(id, 'N', color, Position(1, 7));
-    id++;
-    createPiece(id, 'N', color, Position(6, 7));
-    id++;
-
-    createPiece(id, 'Q', color, Position(3, 7));
     id++;
 }
 
@@ -418,10 +415,9 @@ void Board::createPiece(int id, char type, bool isWhite, Position pos){
             allPieces[id] = std::make_unique<Pawn>(id, isWhite, pos);
             break;
         default:
-            throw std::invalid_argument("Bledny symbol figury!");
+            throw std::invalid_argument("Incorrect piece symbol!");
             break;
     }
-
     if(isWhite){
         whitePlayer->addPlayerPiece(id);
 
@@ -429,7 +425,6 @@ void Board::createPiece(int id, char type, bool isWhite, Position pos){
     else{
         blackPlayer->addPlayerPiece(id);
     }
-
     squares[pos.x][pos.y]->setCurrentPiece(id);
 }
 
@@ -442,8 +437,7 @@ uint64_t Board::random64BitNum(){
 }
 
 int Board::getPieceIndexZ(int pieceId){
-    if(allPieces[pieceId] != nullptr){
-        int offset = allPieces[pieceId]->isPieceWhite() ? 0: 6;
+        int offset = getPieceById(pieceId).isPieceWhite() ? 0: 6;
         char pieceType = allPieces[pieceId]->getSymbol();
 
         switch (pieceType)
@@ -457,18 +451,10 @@ int Board::getPieceIndexZ(int pieceId){
             default: return 0;
         }
         return offset;
-
-    }
-    else{
-        std::__throw_invalid_argument;
-        return -1;
-    }
-   
-    
 }
 
 int Board::getSquareIndexZ(Position pos){
-    return pos.x * 8 + pos.y;
+    return (7 - pos.y) * 8 + pos.x;
 }
 
 int Board::getCastleKeyZ(bool isWhite, int dx){
@@ -479,10 +465,8 @@ int Board::getCastleKeyZ(bool isWhite, int dx){
     return color + offset;
 }
 
-uint64_t Board::zobristHash(bool isBlackPlayer, std::pair<bool, int> enPassant){
-
+uint64_t Board::zobristHash(bool isBlackPlayer){
     uint64_t hash = 0;
-
     for(int i = 0; i < 8; i++){
         for(int j = 0; j < 8; j++){
             Position tempPosition(i, j);
@@ -509,16 +493,20 @@ uint64_t Board::zobristHash(bool isBlackPlayer, std::pair<bool, int> enPassant){
             hash ^= castleKeys[getCastleKeyZ(true, -1)];
         }
     }
-    if(enPassant.first){
-        hash ^= enPassantKeys[enPassant.second];
+    int offset = moveHistory.size() % 2 == 1 ? 1 : 16;
+    for(auto it = allPieces.begin() + offset; it != allPieces.begin() + offset + 8; ++it){
+        const std::unique_ptr<Piece>& piece = *it;
+        if(!piece) continue;
+        if(piece->getSymbol() != 'P') continue;
+        Pawn* pawn = dynamic_cast<Pawn*>(piece.get());
+        auto moveDir = std::ranges::subrange(pawn->getMoveDirections().begin() + 1, pawn->getMoveDirections().end());
+        for(auto dir : moveDir){
+            if(int x = pawn->getPosition().x + dir.first; pawn->canEnPassant(dir.first)){
+                hash ^= enPassantKeys[x];
+            }
+        }
     }
-
     return hash;
-
-
-
-    
-
 }
 
 void Board::setPlayerPtr(Player* player, bool isWhite){
@@ -550,6 +538,23 @@ void Board::generateRandNumbers(){
 }
 
 std::span<const std::unique_ptr<Square>> Board::getBoardView() const{
-    return std::span<const std::unique_ptr<Square>>(&squares[0][0], 8 * 8);
+    return std::span<const std::unique_ptr<Square>>(&squares[0][0], 64);
 }
+
+std::span<const std::unique_ptr<Piece>> Board::getPieceView() const{
+    return std::span<const std::unique_ptr<Piece>>(allPieces);
+}
+const Move* Board::getLastMove() const{
+    if(!moveHistory.empty()){
+        return &moveHistory.back();
+    }
+    else{
+        return nullptr;
+    }
+}
+
+void Board::removePieceFromPosition(int pieceId, Position pos){
+    this->squares[pos.x][pos.y]->removeAttacker(pieceId);
+}
+
 

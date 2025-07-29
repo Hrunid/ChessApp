@@ -10,33 +10,28 @@ UI::UI(sf::RenderWindow& wnd, App& app)
     boardView(),
     winSize(window.getSize()),
     app(app),
-    scale(1.0f),
-    menuButtonW_Pct(0.30f),
-    menuButtonH_Pct(0.08f),
-    menuStartY_Pct(0.25f),
-    menuSpacingY_Pct(0.03f),
-    menuTitleHeight_Pct(0.10f),
-    menuTitleTopMargin_Pct(0.05f)
+    game(),
+    whiteSide(true),
+    mainContainerSize("100%"),
+    boardContainerH("100%"),
+    boardContainerW("56.25%"),
+    squareSize("12.5%"),
+    menuButtonW("100%"),
+    menuButtonH("20%"),
+    sidePanelH("100%"),
+    sidePanelW("43.75%")
 {
     menu = tgui::Panel::create({"100%", "100%"});
     menu->setPosition("0%", "0%");
 
-    tgui::Picture::Ptr background = tgui::Picture::create("C:/Users/wiktw/OneDrive/Dokumenty/c++/SzachyZId/ChessApp/zdj/tlo.jpg");
+    tgui::Picture::Ptr background = tgui::Picture::create("C:/Users/user/Desktop/ChessApp/ChessApp/zdj/tlo.jpg");
     background->setSize("100%", "100%");
-    
     menu->add(background);
     background->moveToBack();
 
-    
-
-
-
     menuButtons = tgui::Panel::create();
-    menuButtons->setSize("40%", "100%");
+    menuButtons->setSize("40%", "100");
     menuButtons->setPosition("30%", "0%");
-
-
-
 
     const std::vector<std::string> labels = {"Nowa gra", "Wczytaj", "Ustawienia", "Wyjscie"};
     float spacing = 0.02f;
@@ -63,7 +58,6 @@ UI::UI(sf::RenderWindow& wnd, App& app)
         else{
             btn->onPress([this]() {
                 menuButtons->setVisible(false);
-                std::cout << "Kliknieto\n";
             });
         }
         menuButtons->add(btn);
@@ -72,17 +66,14 @@ UI::UI(sf::RenderWindow& wnd, App& app)
     menu->add(menuButtons);
     gui.add(menu);
 
-
-    
     boardContainer = tgui::Panel::create();
-    //auto boardSize = window.getSize().y * 0.7;
     boardContainer->setSize("56.25%", "100%");
     boardContainer->setPosition(0, 0);
-    //float squareSize = boardSize / 8;
     for(int i = 0; i < 8; i++){
-        for(int j = 0; j < 8; j++){
+        for(int j = 7; j >= 0; j--){
             tgui::Button::Ptr btn = tgui::Button::create();
             boardContainer->add(btn);
+            boardButtons[i][j] = btn;
             btn->setSize("12.5%", "12.5%");
             
             //btn->setPosition(squareSize * i, squareSize * j);
@@ -91,6 +82,10 @@ UI::UI(sf::RenderWindow& wnd, App& app)
             bool light = (i + j) % 2 == 0;
             sf::Color color = light ? sf::Color(233, 217, 209) : sf::Color(107, 70, 52);
             btn->getRenderer()->setBackgroundColor(color);
+            btn->onClick([this, i, j]() {
+                Position logicalPos = mapPosition(Position(i, j));
+                game->processClick(logicalPos);
+            });
         }
     }
     boardContainer->setVisible(false);
@@ -111,19 +106,43 @@ void UI::draw(){
 }
 
 void UI::drawGameSettings(){}
-void UI::UI::drawEndGamePanel(){}
+void UI::UI::drawEndGamePanel(){
+    
+}
 
-void UI::drawBoard(bool whiteSide)
+void UI::drawBoard()
 {
-    std::cout << "Called UI::drawBorad()\n";
     boardContainer->setVisible(true);
+    for(int i = 0; i < 8; i++){
+        for(int j = 0; j < 8; j++){
+            int index = getMappedIndex(i, j);
+            int pieceId = boardView[index]->getCurrentPieceId();
+            std::string text = "";
+            if(pieceId != -1){
+                char symbol = game->getPieceById(pieceId).getSymbol();
+                text += symbol;
+                text += std::to_string(pieceId);
+            }
+            boardButtons[i][j]->setText(text);
+        }
+    }
     this->draw();
 }
 
 void UI::drawSidePanel(){}
-void UI::drawAccessibleSquares(std::vector<Position> squares){}
-void UI::setBoardView(std::span<const std::unique_ptr<Square>> boardView){
-    this->boardView = boardView;
+void UI::drawAccessibleSquares(const std::vector<Position>& squares){
+
+    for(Position pos : squares){
+        auto mappedPos = mapPosition(pos);
+        boardButtons[mappedPos.x][mappedPos.y]->setText("Accessible");
+    }
+    this->draw();
+}
+void UI::setBoardView(std::span<const std::unique_ptr<Square>> boardVieww){
+    this->boardView = boardVieww;
+}
+void UI::setPieceView(std::span<const std::unique_ptr<Piece>> pieceView){
+    this->pieceView = pieceView;
 }
 
 void UI::showMenu(bool visible){
@@ -131,5 +150,24 @@ void UI::showMenu(bool visible){
 }
 void UI::showBoard(bool visible){
     boardContainer->setVisible(visible);
+}
+
+void UI::setGamePtr(Game* gamePtr){
+    this->game = gamePtr;
+}
+
+void UI::drawPromotionOptions(Position pos){
+    std::cout << "called method drawPromotionOptions\n";
+}
+
+void UI::setPerspective(bool whitePersp){
+    whiteSide = whitePersp;
+}
+
+int UI::getMappedIndex(int x, int y) const{
+    return whiteSide ? x * 8 + y : (7 - x) * 8 + (7 - y);
+}
+Position UI::mapPosition(Position pos) const{
+    return whiteSide ? pos : Position(7 - pos.x, 7 - pos.y);
 }
 
