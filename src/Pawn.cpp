@@ -33,28 +33,24 @@ void Pawn::findMovesInDirection(std::pair<int, int> direction){
 
     }
     else{
-            Position tempPosition = currentPosition;
-            tempPosition += direction;
-    
-            if(board->isOnBoard(tempPosition)){
-                if(board->isSquareEmpty(tempPosition)){
-                    if(canEnPassant(direction.first)){
-                        availableMoves.push_back(tempPosition);
-                    }
-                    else{
-                        seenBlockedSquares.push_back(tempPosition);
-                    }
-                }
-                else if(board->getPieceById(board->getPieceIdAtPosition(tempPosition)).isPieceWhite() == isWhite){
-                    seenBlockedSquares.push_back(tempPosition);
-                }
-                else{
+        Position tempPosition = currentPosition;
+        tempPosition += direction;
+        if(board->isOnBoard(tempPosition)){
+            if(board->isSquareEmpty(tempPosition)){
+                if(canEnPassant(direction.first)){
                     availableMoves.push_back(tempPosition);
                 }
+                else{
+                    seenBlockedSquares.push_back(tempPosition);
+                }
             }
-    
-    
-        
+            else if(board->getPieceById(board->getPieceIdAtPosition(tempPosition)).isPieceWhite() == isWhite){
+                seenBlockedSquares.push_back(tempPosition);
+            }
+            else{
+                availableMoves.push_back(tempPosition);
+            }
+        }        
     }
 }
 

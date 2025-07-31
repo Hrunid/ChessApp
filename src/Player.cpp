@@ -138,7 +138,8 @@ void Player::applyCheckRestrictions(){
         for(auto it = piecesId.begin() + 1; it != piecesId.end(); ++it){
             int id = *it;
             Piece& piece = board->getPieceById(id);
-            for(Position pos : piece.getAvailableMoves()){
+            std::vector<Position> pieceSquares = piece.getAvailableMoves();
+            for(Position pos : pieceSquares){
                 if(std::find(checkLine.begin(), checkLine.end(), pos) == checkLine.end()){
                     board->removePieceFromPosition(id, pos);
                     piece.removeMove(pos);

@@ -11,86 +11,92 @@ UI::UI(sf::RenderWindow& wnd, App& app)
     winSize(window.getSize()),
     app(app),
     game(),
-    whiteSide(true),
+    whiteSide(false),
     mainContainerSize("100%"),
     boardContainerH("100%"),
     boardContainerW("56.25%"),
     squareSize("12.5%"),
-    menuButtonW("100%"),
-    menuButtonH("20%"),
+    menuButtonW("60%"),
+    menuButtonH("40%"),
     sidePanelH("100%"),
     sidePanelW("43.75%")
-{
-    menu = tgui::Panel::create({"100%", "100%"});
-    menu->setPosition("0%", "0%");
-
-    tgui::Picture::Ptr background = tgui::Picture::create("C:/Users/user/Desktop/ChessApp/ChessApp/zdj/tlo.jpg");
-    background->setSize("100%", "100%");
-    menu->add(background);
-    background->moveToBack();
-
-    menuButtons = tgui::Panel::create();
-    menuButtons->setSize("40%", "100");
-    menuButtons->setPosition("30%", "0%");
-
-    const std::vector<std::string> labels = {"Nowa gra", "Wczytaj", "Ustawienia", "Wyjscie"};
-    float spacing = 0.02f;
-    float btnHeight = 1.f / (labels.size() + spacing * (labels.size() - 1));
-    float posY = 0.f;
-
-    for (auto label : labels)
     {
-        tgui::Button::Ptr btn = tgui::Button::create(label);
-        btn->setSize("100%", tgui::String(std::to_string(btnHeight * 100.f) + "%"));
-        btn->setPosition("0%", tgui::String(std::to_string(posY * 100.f) + "%"));
+        menu = tgui::Panel::create({mainContainerSize, mainContainerSize});
+        menu->setPosition("0%", "0%");
 
-        
-        if(label == "Wyjscie"){
-            btn->onPress([this]() {
-                window.close();
-            });
-        }
-        else if(label == "Nowa gra"){
-            btn->onPress([this](){
-                this->app.startNewGame(TwoPlayers);
-            });
-        }
-        else{
-            btn->onPress([this]() {
-                menuButtons->setVisible(false);
-            });
-        }
-        menuButtons->add(btn);
-        posY += btnHeight + spacing;
-    }
-    menu->add(menuButtons);
-    gui.add(menu);
+        tgui::Picture::Ptr background = tgui::Picture::create("C:/Users/user/Desktop/ChessApp/ChessApp/zdj/tlo.jpg");
+        background->setSize(mainContainerSize, mainContainerSize);
+        menu->add(background);
+        background->moveToBack();
 
-    boardContainer = tgui::Panel::create();
-    boardContainer->setSize("56.25%", "100%");
-    boardContainer->setPosition(0, 0);
-    for(int i = 0; i < 8; i++){
-        for(int j = 7; j >= 0; j--){
+        menuButtons = tgui::Panel::create({menuButtonW, menuButtonH});
+        menuButtons->setPosition("20%", "30%");
+
+        const std::vector<tgui::String> labels = {"Nowa gra", "Wczytaj", "Ustawienia", "Wyjscie"};
+        for(int i = 0; i < labels.size(); i++){
+            tgui::Button::Ptr btn = tgui::Button::create(labels[i]);
+            btn->setSize("100%", "22.5%");
+            btn->setPosition("0%", tgui::String(i * 25) + "%");
+            if(i == 0){
+                btn->onPress([this]() {
+                    this->app.startNewGame(TwoPlayers);
+                });
+            }
+            else if(i == 1){
+                btn->onPress([this]() {
+                    std::cout << "Load game functionality not implemented yet." << std::endl;
+                });
+            }
+            else if(i == 2){
+                btn->onPress([this]() {
+                    std::cout << "Settings functionality not implemented yet." << std::endl;
+                });
+
+            }
+            else if(i == 3){
+                btn->onPress([this]() {
+                    window.close();
+                });
+            }   
+            menuButtons->add(btn);
+            menuButtons->getRenderer()->setTransparentTexture(false);
+        }
+        menu->add(menuButtons);
+        gui.add(menu);
+
+        boardContainer = tgui::Panel::create({boardContainerW, boardContainerH});
+        boardContainer->setPosition(0, 0);
+        for(int i = 0; i < 8; i++){
+            for(int j = 7; j >= 0; j--){
+                tgui::Button::Ptr btn = tgui::Button::create();
+                boardContainer->add(btn);
+                boardButtons[i][j] = btn;
+                btn->setSize(squareSize, squareSize);
+                btn->setPosition(tgui::String(std::to_string(i * 12.5f) + "%"), tgui::String(std::to_string(j * 12.5f) + "%"));
+
+                bool light = (i + j) % 2 == 0;
+                sf::Color color = light ? sf::Color(233, 217, 209) : sf::Color(107, 70, 52);
+                btn->getRenderer()->setBackgroundColor(color);
+                btn->onClick([this, i, j]() {
+                    Position logicalPos = mapPosition(Position(i, j));
+                    game->processClick(logicalPos);
+                    promotionPanel->setVisible(false);
+                });
+            }
+        }
+        boardContainer->setVisible(false);
+        gui.add(boardContainer);
+
+        promotionPanel = tgui::Panel::create({squareSize, "50%"});
+        promotionPanel->setVisible(false);
+        boardContainer->add(promotionPanel);
+        for(int i = 0; i < 4; i++){
             tgui::Button::Ptr btn = tgui::Button::create();
-            boardContainer->add(btn);
-            boardButtons[i][j] = btn;
-            btn->setSize("12.5%", "12.5%");
-            
-            //btn->setPosition(squareSize * i, squareSize * j);
-            btn->setPosition(tgui::String(std::to_string(i * 12.5f) + "%"), tgui::String(std::to_string(j * 12.5f) + "%"));
-
-            bool light = (i + j) % 2 == 0;
-            sf::Color color = light ? sf::Color(233, 217, 209) : sf::Color(107, 70, 52);
-            btn->getRenderer()->setBackgroundColor(color);
-            btn->onClick([this, i, j]() {
-                Position logicalPos = mapPosition(Position(i, j));
-                game->processClick(logicalPos);
-            });
+            btn->setSize("100%", "25%");
+            btn->setPosition("0%", tgui::String(25 * i) + "%");
+            promotionPanel->add(btn);
         }
     }
-    boardContainer->setVisible(false);
-    gui.add(boardContainer);
-}
 
 void UI::handleEvent(const sf::Event& evt){
     gui.handleEvent(evt);
@@ -109,7 +115,6 @@ void UI::drawGameSettings(){}
 void UI::UI::drawEndGamePanel(){
     
 }
-
 void UI::drawBoard()
 {
     boardContainer->setVisible(true);
@@ -158,6 +163,17 @@ void UI::setGamePtr(Game* gamePtr){
 
 void UI::drawPromotionOptions(Position pos){
     std::cout << "called method drawPromotionOptions\n";
+    
+    if(whiteSide){
+        float offset = pos.y == 7 ? 3 : 0;
+        promotionPanel->setPosition(tgui::String(12.5 * pos.x) + "%", tgui::String(12.5 * pos.y - (12.5f * offset)) + "%");
+        
+    }
+    else{
+        float offset = pos.y == 7 ? 0 : 3;
+        promotionPanel->setPosition(tgui::String(12.5 * (8 - pos.x)) + "%", tgui::String(12.5 * (8 - pos.y) - (12.5 * offset)) + "%");
+    }
+    promotionPanel->setVisible(true);
 }
 
 void UI::setPerspective(bool whitePersp){

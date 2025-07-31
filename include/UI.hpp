@@ -28,7 +28,7 @@ class UI{
         App& app;
         Game* game;
 
-        std::string mainContainerSize;
+        tgui::String mainContainerSize;
 
         std::span<const std::unique_ptr<Square>> boardView;
         std::span<const std::unique_ptr<Piece>> pieceView;
@@ -36,21 +36,25 @@ class UI{
         int getMappedIndex(int x, int y) const;
         Position mapPosition(Position pos) const;
 
-
         tgui::Group::Ptr boardContainer;
         std::array<std::array<tgui::Button::Ptr, 8>, 8> boardButtons;
-        std::string boardContainerH;
-        std::string boardContainerW;
-        std::string squareSize;
+        tgui::String boardContainerH;
+        tgui::String boardContainerW;
+        tgui::String squareSize;
 
         tgui::Container::Ptr menu;
         tgui::Container::Ptr menuButtons;
-        std::string menuButtonW;
-        std::string menuButtonH;
+        tgui::String menuButtonW;
+        tgui::String menuButtonH;
 
         tgui::Container::Ptr sidePanel;
-        std::string sidePanelH;
-        std::string sidePanelW;
+        tgui::String sidePanelH;
+        tgui::String sidePanelW;
+
+        tgui::Container::Ptr promotionPanel;
+        tgui::String promotionPanelH;
+        tgui::String promotionPanelW;
+
         
     public:
         UI(sf::RenderWindow& window, App& app);
@@ -65,11 +69,11 @@ class UI{
         void drawSidePanel();
         void drawAccessibleSquares(const std::vector<Position>& squares);
         void drawPromotionOptions(Position pos);
+        void setPerspective(bool whitePersp);
 
         void setGamePtr(Game* gamePtr);
         void setBoardView(std::span<const std::unique_ptr<Square>> boardView);
         void setPieceView(std::span<const std::unique_ptr<Piece>> pieceView);
-        void setPerspective(bool whitePersp);
     };
 
 #endif

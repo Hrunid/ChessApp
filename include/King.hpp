@@ -10,8 +10,6 @@ class King : public Piece{
     public:
         King(int id, bool isWhite, Position currentPosition);
         void calculateAvailableMoves() override;
-        
-
 };
 
 #endif

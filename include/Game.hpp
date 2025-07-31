@@ -28,7 +28,7 @@ enum GameType{
 enum GameState{
     StartScreen,
     Running,
-    GameEnded
+    Ended
 };
 
 class Game{

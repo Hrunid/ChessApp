@@ -68,10 +68,11 @@ void App::drawUI(){
             }*/
 
         }
-        else if (gameState == GameEnded)
+        else if (gameState == Ended)
         {
             ui->drawBoard();
             ui->drawEndGamePanel();
+            ui->showMenu(true);
         }
         
     }

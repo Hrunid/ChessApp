@@ -17,14 +17,12 @@ Game::Game(GameType type, UI& uiReff)
         players[1] = std::make_unique<Player>(16, false);
         board = std::make_unique<Board>(players[0].get(), players[1].get(), moveHistory);
         
-        
         players[0]->setBoardPtr(board.get());
         players[1]->setBoardPtr(board.get());
     }
 
 void Game::processClick(Position click){
     int pieceAtClick = board->getPieceIdAtPosition(click);
-    std::cout << " called procesClick() at x=" << click.x << " y=" << click.y << " selected piece:" << selectedPiece <<std::endl;
     if(selectedPiece != -1){
         if(board->getPieceById(selectedPiece).isMoveAvailable(click)){
             if(char selSymb = board->getPieceById(selectedPiece).getSymbol(); selSymb == 'P'){
@@ -129,10 +127,8 @@ void Game::checkGameState(){
     else{
         if(players[currentPlayer]->isPlayerInCheck()){
             moveHistory.back().setCheck(true);
-            if(players[currentPlayer]->hasPlayerMoves()){
-                players[currentPlayer]->applyCheckRestrictions();
-            }
-            else{
+            players[currentPlayer]->applyCheckRestrictions();
+            if(!players[currentPlayer]->hasPlayerMoves()){
                 moveHistory.back().setMate(true);
                 endGame(Loss);
             }
@@ -156,6 +152,11 @@ void Game::checkGameState(){
 
 void Game::endGame(Result res){
     std::cout<<"Game ended"<<res <<std::endl;
+    ui.setGamePtr(nullptr);
+    ui.showBoard(false);
+    ui.showMenu(true);
+    ui.setPieceView({});
+    ui.setBoardView({});
 }
 
 bool Game::threeTimeRepetition(){
