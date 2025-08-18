@@ -14,6 +14,8 @@
 #include <memory>
 #include <array>
 #include <string>
+#include <utility>
+#include <optional>
 
 class Game;
 class App;
@@ -23,40 +25,50 @@ class UI{
     private:
         sf::RenderWindow& window;
         tgui::Gui gui;
-        sf::Vector2u winSize;
-        float scale;
         App& app;
         Game* game;
-
-        tgui::String mainContainerSize;
-
-        std::span<const std::unique_ptr<Square>> boardView;
+        std::string path;
+        sf::Color lightSquare;
+        sf::Color darkSquare;
+        
+        std::span<const Square> boardView;
         std::span<const std::unique_ptr<Piece>> pieceView;
         bool whiteSide;
         int getMappedIndex(int x, int y) const;
         Position mapPosition(Position pos) const;
 
+        float mainContainerSize;
         tgui::Group::Ptr boardContainer;
         std::array<std::array<tgui::Button::Ptr, 8>, 8> boardButtons;
-        tgui::String boardContainerH;
-        tgui::String boardContainerW;
-        tgui::String squareSize;
+        float boardContainerH;
+        float boardContainerW;
+        float squareSize;
 
         tgui::Container::Ptr menu;
         tgui::Container::Ptr menuButtons;
-        tgui::String menuButtonW;
-        tgui::String menuButtonH;
+        float menuButtonW;
+        float menuButtonH;
 
         tgui::Container::Ptr sidePanel;
-        tgui::String sidePanelH;
-        tgui::String sidePanelW;
+        float sidePanelH;
+        float sidePanelW;
+ 
+        
+        float promotionPanelH;
+        float promotionPanelW;
 
-        tgui::Container::Ptr promotionPanel;
-        tgui::String promotionPanelH;
-        tgui::String promotionPanelW;
+        tgui::String percent(float value) const;
 
+        tgui::Button::Ptr createTguiBtn(
+                std::string label, 
+                std::pair<tgui::String, tgui::String> position, 
+                std::pair<tgui::String, tgui::String> size, 
+                std::optional<std::function<void()>> onClick = std::nullopt,
+                std::optional<sf::Color> color = std::nullopt
+            );
         
     public:
+        tgui::Container::Ptr promotionPanel;
         UI(sf::RenderWindow& window, App& app);
         void handleEvent(const sf::Event& evt);
         void drawMenu();
@@ -68,11 +80,11 @@ class UI{
         void showBoard(bool visible);
         void drawSidePanel();
         void drawAccessibleSquares(const std::vector<Position>& squares);
-        void drawPromotionOptions(Position pos);
+        void drawPromotionOptions(Position from, Position to);
         void setPerspective(bool whitePersp);
 
         void setGamePtr(Game* gamePtr);
-        void setBoardView(std::span<const std::unique_ptr<Square>> boardView);
+        void setBoardView(std::span<const Square> boardView);
         void setPieceView(std::span<const std::unique_ptr<Piece>> pieceView);
     };
 

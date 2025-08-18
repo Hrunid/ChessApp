@@ -1,4 +1,5 @@
 /build/
+/bin/
 /CMakeFiles/
 /compile_commands.json
 CMakeCache.txt
@@ -23,5 +24,6 @@ CMakeCache.txt
 
 /libs/SFML/
 /libs/TGUI/
+/libs/stockfish
 
 .vscode

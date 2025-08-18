@@ -10,108 +10,70 @@ Game::Game(GameType type, UI& uiReff)
         boringMoves(0),
         state(Running),
         type(type),
-        ui(uiReff)
-        
+        ui(uiReff),
+        players{{{0, true}, {16, false}}},
+        board(&players[0], &players[1], moveHistory)
     {
-        players[0] = std::make_unique<Player>(0, true);
-        players[1] = std::make_unique<Player>(16, false);
-        board = std::make_unique<Board>(players[0].get(), players[1].get(), moveHistory);
-        
-        players[0]->setBoardPtr(board.get());
-        players[1]->setBoardPtr(board.get());
+        players[0].setBoardPtr(&board);
+        players[1].setBoardPtr(&board);
+        //Stockfish::Bitboard::init();
     }
 
 void Game::processClick(Position click){
-    int pieceAtClick = board->getPieceIdAtPosition(click);
+    int pieceAtClick = board.getPieceIdAtPosition(click);
+    bool clickedEmpty = board.isSquareEmpty(click);
+    bool clickedOwnPiece = !(clickedEmpty) &&  board.getPieceById(pieceAtClick).isPieceWhite() == players[currentPlayer].isPlayerWhite();
     if(selectedPiece != -1){
-        if(board->getPieceById(selectedPiece).isMoveAvailable(click)){
-            if(char selSymb = board->getPieceById(selectedPiece).getSymbol(); selSymb == 'P'){
-                if(int promRow = getPieceById(selectedPiece).isPieceWhite() ? 0 : 7; click.y == promRow){
-                    ui.drawPromotionOptions(click);
+        Piece& selected = board.getPieceById(selectedPiece);
+        bool tempIsWhite = selected.isPieceWhite();
+        if(selected.isMoveAvailable(click)){
+            Position from = selected.getPosition();
+            if(selected.getSymbol() == 'P'){
+                int promRow = selected.isPieceWhite() ? 0 : 7;
+                if(int promRow = tempIsWhite ? 0 : 7; click.y == promRow){
+                    ui.drawPromotionOptions(from, click);
                     return;
                 }
             }
-            executeTurn(board->getPieceById(selectedPiece).getPosition(), click);
+            executeTurn(from, click);
             return;
         }
-        else if(!board->isSquareEmpty(click) && (board->getPieceById(pieceAtClick).isPieceWhite() == players[currentPlayer]->isPlayerWhite())){     //Check if clicked piece is same color as current player
-            selectedPiece = pieceAtClick;
-        }
-        else{
-            selectedPiece = -1;
-
-        }
-        return;
-    }
-    else if(board->isSquareEmpty(click)){
-        selectedPiece = -1;
-    }
-    else if(players[currentPlayer]->isPlayerWhite() == board->getPieceById(pieceAtClick).isPieceWhite()){
-        selectedPiece = pieceAtClick;
-    }
-    else{
-        selectedPiece = -1;
-    }
-}
-/*
-void Game::processClick(Position click) {
-    int pieceAtClick = board->getPieceIdAtPosition(click);
-    bool squareEmpty = board->isSquareEmpty(click);
-    bool clickedOwnPiece = !squareEmpty &&
-        board->getPieceById(pieceAtClick).isPieceWhite() == players[currentPlayer]->isPlayerWhite();
-
-    if (selectedPiece != -1) {
-        const Piece& selected = board->getPieceById(selectedPiece);
-
-        if (selected.isMoveAvailable(click)) {
-            if (selected.getSymbol() == 'P') {
-                int promotionRow = selected.isPieceWhite() ? 7 : 0;
-                if (click.x == promotionRow) {
-                    ui.drawPromotionOptions(click);
-                    return;
-                }
-            }
-
-            executeTurn(selected.getPosition(), click);
-            return;
-        }
-
         selectedPiece = clickedOwnPiece ? pieceAtClick : -1;
         return;
     }
     selectedPiece = clickedOwnPiece ? pieceAtClick : -1;
-}*/
+}
 
 void Game::promote(Position from, Position to, char symb){
     executeTurn(from, to, true, symb);
 }
 
 void Game::executeTurn(Position from, Position to, bool promotion, char symb){
-    Move newMove = createMove(from, to);
+    Move newMove = createMove(from, to, promotion, symb);
     moveHistory.push_back(newMove);
     moveCount++;
     currentPlayer = moveCount % 2;
-    board->makeMove(newMove);
+    board.makeMove(newMove, currentPlayer);
     checkGameState();
     selectedPiece = -1;
 }
 
 Move Game::createMove(Position from, Position to, bool promotion, char promPiece){
-    int tempPieceId = board->getPieceIdAtPosition(from);
-    char symb = board->getPieceById(tempPieceId).getSymbol();
+    int tempPieceId = board.getPieceIdAtPosition(from);
+    char symb = board.getPieceById(tempPieceId).getSymbol();
     Move newMove(from, to, symb);
-    if(!board->isSquareEmpty(to)){
+    if(!board.isSquareEmpty(to)){
         newMove.setCapture(true);
     }
     if(symb == 'K' && abs(from.x - to.x) > 1){
         newMove.setCastle(true);
     }
     else if(symb == 'P'){
-        if(from.x != to.x && newMove.capture() && board->isSquareEmpty(to)){
+        if(from.x != to.x && newMove.capture() && board.isSquareEmpty(to)){
             newMove.setEnPassant(true);
         }
     if(promotion){
-        newMove.promotion();
+        newMove.setPromotion(promotion);
         newMove.setPromotionPiece(promPiece);
     }
 
@@ -125,21 +87,21 @@ void Game::checkGameState(){
         endGame(Draw);
     }
     else{
-        if(players[currentPlayer]->isPlayerInCheck()){
+        if(players[currentPlayer].isPlayerInCheck()){
             moveHistory.back().setCheck(true);
-            players[currentPlayer]->applyCheckRestrictions();
-            if(!players[currentPlayer]->hasPlayerMoves()){
+            players[currentPlayer].applyCheckRestrictions();
+            if(!players[currentPlayer].hasPlayerMoves()){
                 moveHistory.back().setMate(true);
                 endGame(Loss);
             }
         }
-        else if(players[currentPlayer]->hasPlayerMoves()){
-            board->updatePins();
+        else if(players[currentPlayer].hasPlayerMoves()){
+            board.updatePins();
             if(moveHistory.size() >= 2 && moveHistory[moveHistory.size() - 2].check()){
-                const std::vector<int>& playersPieces = players[currentPlayer]->getPiecesId();
-                board->updatePieces(playersPieces);
+                const std::vector<int>& playersPieces = players[currentPlayer].getPiecesId();
+                board.updatePieces(playersPieces);
             }
-            if(!players[currentPlayer]->hasEnoughMaterial()){
+            if(!players[currentPlayer].hasEnoughMaterial()){
                 endGame(Draw);
             }
 
@@ -161,7 +123,7 @@ void Game::endGame(Result res){
 
 bool Game::threeTimeRepetition(){
     Move tempMove = moveHistory.back();
-    uint64_t position = board->zobristHash(players[currentPlayer]->isPlayerWhite());
+    uint64_t position = board.zobristHash(players[currentPlayer].isPlayerWhite());
 
     if(positionHistory.find(position) != positionHistory.end()){
         positionHistory[position]++;
@@ -202,11 +164,11 @@ int Game::getSelectedPiece() const{
 }
 
 const Piece& Game::getPieceById(int pieceId){
-    return board->getPieceById(pieceId);
+    return board.getPieceById(pieceId);
 }
 
 const Player& Game::getCurrentPlayer(){
-    return *players[currentPlayer];
+    return players[currentPlayer];
 }
 
 GameType Game::getGameType(){
@@ -217,12 +179,12 @@ void Game::setGameState(GameState newState){
     state = newState;
 }
 
-std::span<const std::unique_ptr<Square>> Game::boardView() const{
-    return board->getBoardView();
+std::span<const Square> Game::boardView() const{
+    return board.getBoardView();
 }
 
 std::span<const std::unique_ptr<Piece>> Game::pieceView() const{
-    return board->getPieceView();
+    return board.getPieceView();
 }
 
 

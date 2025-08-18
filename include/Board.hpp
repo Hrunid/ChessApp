@@ -18,7 +18,7 @@
 class Board{
     private:
         std::array<std::unique_ptr<Piece>, 32> allPieces;
-        std::array<std::array<std::unique_ptr<Square>, 8>, 8> squares;
+        std::array<std::array<Square, 8>, 8> squares;
         Player* whitePlayer;
         Player* blackPlayer;
         std::vector<Pin> pins;
@@ -30,7 +30,6 @@ class Board{
         uint64_t blackPlayerKey;                                                //For black player move
 
         void setUpPieces();
-        void createSquares();
         void createPiece(int id, char type, bool isWhite, Position pos);
 
         uint64_t random64BitNum();
@@ -49,7 +48,7 @@ class Board{
         void generateRandNumbers();
         
     public:
-        Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move> moveHis);
+        Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move>& moveHis);
         ~Board();
         void setPlayerPtr(Player* player, bool isWhite);
         Piece& getPieceById(int id);
@@ -61,14 +60,14 @@ class Board{
         const std::vector<Pin>& getPins() const;
         std::pair<int, int> calculateDirection(Position from, Position to) const;
         void updatePieces(const std::vector<int>& pieceToUpdate);       
-        void makeMove(const Move& move);
+        void makeMove(const Move& move, int player);
         void updatePins();
         void addPin(Pin newPin);
         std::string convertToFEN();
         void removePieceFromSquares(int pieceId);
         void removePieceFromPosition(int pieceId, Position pos);
         uint64_t zobristHash(bool blackPlayer);
-        std::span<const std::unique_ptr<Square>> getBoardView() const;
+        std::span<const Square> getBoardView() const;
         std::span<const std::unique_ptr<Piece>> getPieceView() const;
         const Move* getLastMove() const;   
  };

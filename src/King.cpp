@@ -1,6 +1,8 @@
 #include "King.hpp"
 #include "Board.hpp"
 
+#include <algorithm>
+
 King::King(int id, bool isWhite, Position currentPosition)
     :   Piece(id, 'K', isWhite, currentPosition, { {1, 0}, {-1 ,0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1} })
     {}
@@ -43,9 +45,6 @@ void King::calculateAvailableMoves(){
         }
 
     }
-
-    
-
 }
 
 void King::findCastleMove(int dx){
@@ -84,13 +83,11 @@ void King::findCastleMove(int dx){
 
 bool King::isSquareSafe(Position pos){
     const std::vector<int>& pieces = board->getSquareAtPosition(pos).getPiecesWithAcces();
-
-    for(int pieceId : pieces){
-        bool tempIsWhite = board->getPieceById(pieceId).isPieceWhite();
-        if(isWhite != tempIsWhite){
-            return false;
-        }
-    }
-    return true;
-
+    return std::all_of(
+        pieces.begin(), 
+        pieces.end(), 
+        [this, pos](int id){
+            Piece& tempPiece = board->getPieceById(id);
+            return tempPiece.isPieceWhite() == isWhite || (tempPiece.getSymbol() == 'P' && (tempPiece.getPosition().x == pos.x));
+        });
 }

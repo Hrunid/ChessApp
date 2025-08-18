@@ -14,16 +14,17 @@
 #include <exception>
 #include <ranges>
 
-Board::Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move> moveHis)
+Board::Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move>& moveHis)
     :   pins(),
         whitePlayer(whitePlayer),
         blackPlayer(blackPlayer),
-        moveHistory(moveHis)
+        moveHistory(moveHis),
+        squares{}
 
 {
             
     Piece::setBoardPtr(this);
-    createSquares();
+
     setUpPieces();
     for(int i = 0; i < 32; i++){
         allPieces[i]->calculateAvailableMoves();
@@ -37,7 +38,7 @@ Board::~Board(){
     blackPlayer = nullptr;
 }
 
-void Board::makeMove(const Move& move){
+void Board::makeMove(const Move& move, int player){
 
     const Position from = move.getPositionFrom();
     Position to = move.getPositionTo();
@@ -53,8 +54,9 @@ void Board::makeMove(const Move& move){
     else if(move.enPassant()){
         enPassant(from, to);
     }
-    else if(move.promotion()){
+    if(move.promotion()){
         promotion(movedPieceId, move.getPromotionPieceSymbol());
+        tempPositionToUpdate = to;
     }
     std::vector<int> accessFrom = getSquareAtPosition(from).getPiecesWithAcces();
     std::vector<int> accessTo = getSquareAtPosition(to).getPiecesWithAcces();
@@ -66,20 +68,20 @@ void Board::makeMove(const Move& move){
     
     updatePieces(accessFrom);
     updatePieces(accessTo);
+    Player* p = player == 0 ? whitePlayer : blackPlayer;
+    updatePieces({p->getKingId()});
 }
 
 void Board::updatePiecesAtPosition(Position pos){
     const std::vector<int>& piecesWithAccess = getSquareAtPosition(pos).getPiecesWithAcces();
+    Square sq = getSquareAtPosition(pos);
+    int id = sq.getCurrentPieceId();
+    if(id != -1) updatePieces({id});
     updatePieces(piecesWithAccess);
 }
 
 bool Board::isSquareEmpty(Position pos) const{
-    if(squares[pos.x][pos.y]->getCurrentPieceId() == -1){
-        return true;
-    }
-    else{
-        return false;
-    }
+    return squares[pos.x][pos.y].getCurrentPieceId() == -1;
 }
 
 Piece& Board::getPieceById(int id){
@@ -93,15 +95,7 @@ Piece& Board::getPieceById(int id){
 }
 
 int Board::getPieceIdAtPosition(Position pos) const{
-    return squares[pos.x][pos.y]->getCurrentPieceId();
-}
-
-void Board::createSquares(){
-    for(int i = 0; i < 8; i++){
-        for(int j = 0; j < 8; j++){
-            squares[i][j] = std::make_unique<Square>(-1);
-        }
-    }
+    return squares[pos.x][pos.y].getCurrentPieceId();
 }
 
 void Board::updatePieces(const std::vector<int>& piecesToUpdate){
@@ -141,7 +135,7 @@ Square& Board::getSquareAtPosition(Position pos){
     if(isOnBoard(pos)){
         int x = pos.x;
         int y = pos.y;
-        return *squares[x][y];
+        return squares[x][y];
     }
     else{
         throw std::invalid_argument("Square array invalid index!");
@@ -182,14 +176,17 @@ void Board::capture(Position pieceToCapturePosition){
     try{
         int pieceId = getPieceIdAtPosition(pieceToCapturePosition);
         bool isWhite = getPieceById(pieceId).isPieceWhite();
-
-        if(isWhite){
-            whitePlayer->removePlayerPiece(pieceId);
+        if(allPieces[pieceId]->getSymbol() != 'K'){
+            if(isWhite){
+                whitePlayer->removePlayerPiece(pieceId);
+            }
+            else{
+                blackPlayer->removePlayerPiece(pieceId);
+            }
         }
         else{
-            blackPlayer->removePlayerPiece(pieceId);
+            throw std::invalid_argument("Tried to capture King!");
         }
-
         getSquareAtPosition(pieceToCapturePosition).setCurrentPiece(-1);
         removePieceFromSquares(pieceId);
         allPieces[pieceId] = nullptr;
@@ -425,7 +422,7 @@ void Board::createPiece(int id, char type, bool isWhite, Position pos){
     else{
         blackPlayer->addPlayerPiece(id);
     }
-    squares[pos.x][pos.y]->setCurrentPiece(id);
+    squares[pos.x][pos.y].setCurrentPiece(id);
 }
 
 uint64_t Board::random64BitNum(){
@@ -537,8 +534,8 @@ void Board::generateRandNumbers(){
 
 }
 
-std::span<const std::unique_ptr<Square>> Board::getBoardView() const{
-    return std::span<const std::unique_ptr<Square>>(&squares[0][0], 64);
+std::span<const Square> Board::getBoardView() const{
+    return std::span<const Square>(&squares[0][0], 64);
 }
 
 std::span<const std::unique_ptr<Piece>> Board::getPieceView() const{
@@ -554,7 +551,7 @@ const Move* Board::getLastMove() const{
 }
 
 void Board::removePieceFromPosition(int pieceId, Position pos){
-    this->squares[pos.x][pos.y]->removeAttacker(pieceId);
+    this->squares[pos.x][pos.y].removeAttacker(pieceId);
 }
 
 

@@ -13,6 +13,9 @@
 #include <vector>
 #include <array>
 
+#include "uci.h"
+
+
 enum Result{
     Draw,
     Win,
@@ -33,8 +36,8 @@ enum GameState{
 
 class Game{
     protected:
-        std::array<std::unique_ptr<Player>, 2> players;
-        std::unique_ptr<Board> board;
+        std::array<Player, 2> players;
+        Board board;
         std::vector<Move> moveHistory;
         std::unordered_map<int, int> positionHistory;
         int moveCount;
@@ -44,18 +47,21 @@ class Game{
         GameState state;
         GameType type;
         UI& ui;
+        //Stockfish::UCIEngine cpu;
         virtual void runStockfish();
         Move createMove(Position from, Position to, bool promotion = false, char promPiece = '\0');
         Move createMoveFromAiRespone(std::string response);
         void writePosition(std::string fen);
         void pgnToMoves(std::string pgn);      
-        void executeTurn(Position from, Position to, bool promotion = false, char promPiece = '\0');
+        void executeTurn(Position from, Position to, bool promotion = false, char symb = '\0');
         void checkGameState();
         bool threeTimeRepetition();
         bool fiftyMoveRule();
     public:
         Game(GameType type, UI& uiReff);
         virtual ~Game() = default;
+
+        bool prom = false;
 
         void startGame();
         void previousMove();
@@ -69,7 +75,7 @@ class Game{
         const Player& getCurrentPlayer();
         GameType getGameType();
         void setGameState(GameState newState);
-        std::span<const std::unique_ptr<Square>> boardView() const;
+        std::span<const Square> boardView() const;
         std::span<const std::unique_ptr<Piece>> pieceView() const;
 };
 

@@ -1,33 +1,28 @@
-# Chess App
+# ChessApp
 
-This project is fully designed and implemented by me, except for the Zobrist hashing algorithm, an efficient method used to represent chess positions uniquely as 64-bit numbers. Zobrist hashing optimizes the process of detecting repeated positions.
+ChessApp is a desktop chess application written in modern C++ with a custom rules engine, a graphical interface built on SFML and TGUI, and planned UCI integration with Stockfish 17.1. The project emphasizes clear separation of concerns, incremental state updates, and idiomatic use of the C++ Standard Library up to C++23.
 
-A distinctive aspect of this project is its logical structure. Instead of representing the board as an 8x8 array of pointers to pieces, I decided to create a custom `Square` class. The conventional approach, recommended by AI, calculates available moves for every piece after each turn or validates moves immediately, leading to many unnecessary calculations. To streamline this, the `Square` class contains key information such as the ID of the current piece and IDs of pieces with access to it. This design simplifies finding valid moves since only pieces interacting with the starting or ending squares of a move require recalculating potential moves—except in the unique case of the king.
+## Overview
+
+The engine models a complete chess rule set, including legal move generation, pins and check resolution, castling, promotion, and en passant. It supports PGN and UCI notations, FEN export, and uses Zobrist hashing for efficient position identity tracking and repetition detection. The UI provides a clickable board with move highlighting and a promotion flow. A `VsComputer` mode is scaffolded; UCI wiring with Stockfish 17.1 is the next milestone.
+
+## Architecture
+
+The application layer (`App`, `UI`) handles rendering and input. The game controller (`Game`) manages selection, turns, move execution, end-of-game detection, and history. The model centers on `Board`, `Square`, `Move`, `Player`, and a `Piece` hierarchy (`King`, `Queen`, `Rook`, `Bishop`, `Knight`, `Pawn`). `Board` owns the authoritative state, updates pins and attack data, maintains Zobrist keys, and serializes positions and moves. `UI` communicates user intent to `Game`, which delegates to `Board` and exposes read-only views back to the renderer.
+
+## Unique approach to move calculation
+
+Instead of recomputing all piece moves every turn, each `Square` records which pieces have access to it. After a move, the engine updates only the affected local neighborhoods (source and destination regions plus king checks) and then recomputes pins. This incremental, access-map strategy minimizes redundant computation and keeps the interface responsive as complexity grows.
 
 ## Technologies
-The project is developed primarily using C++ and leverages Git for version control and collaboration. CMake is utilized to streamline the build process, ensuring compatibility across different platforms. SFML is used to create an intuitive and functional user interface, while Stockfish serves as the engine for computer-generated moves and analysis.
 
-
+ChessApp uses C++20/23 features and the STL (smart pointers, containers, algorithms, utility types), is configured with CMake, renders with SFML, composes widgets with TGUI, serializes via PGN/FEN/UCI, and fingerprints positions with Zobrist hashing. UCI integration targets Stockfish 17.1 for analysis and engine play.
 
 ## End Goal
 
-The goal is to develop a desktop chess application featuring three different game modes—two-player, player versus computer, and an analysis mode—with a functional user interface created using external libraries like SFML.
+The goal is a fully featured desktop chess application with integrated computer analysis (Stockfish 17.1), multiple modes (human–human, human–engine, analysis), PGN import, FEN starts, a browsable variations tree, and customizable visuals (piece sets, board themes, highlights). The incremental engine design underpins smooth UX by reducing unnecessary calculations.
 
-### Player vs. Computer
+## External sources
 
-To implement the CPU opponent, the application will utilize Stockfish, an open-source chess engine. A dedicated method will run Stockfish as a background process, with a child class managing the communication with the engine and adjusting gameplay execution based on the current player.
+The GUI is implemented with SFML and TGUI. Engine analysis and computer play are planned via the UCI protocol using Stockfish 17.1 (distributed separately).
 
-### Analysis Mode
-
-Analysis mode will support game review by loading PGN files, starting from custom positions, or analyzing finished games. Move branches will be stored in a tree structure, with each move referencing the previous one. To minimize computation, each node will store the best move suggested by the engine and the position in FEN format or as a sequence of moves. Stockfish uses either the current position in FEN or a list of moves from the starting position to evaluate the best moves.
-
-### UI
-
-The user interface will be created using SFML to ensure both functionality and simplicity. Although the main focus of the project is on game logic, the UI will offer customizable options such as square colors and piece styles.
-
-
-## Commit History and Branch Management
-    I acknowledge that my commit history and branch management are somewhat chaotic and can lack clarity. In a collaborative team environment, I would prioritize clearer commit messages and ensure that commits are properly organized within their respective branches.
-
-## Learing Experience
-    Developing this project significantly improved my programming and software design skills. Driven by curiosity and a desire to deeply understand the rationale behind choosing specific solutions, I explored various aspects of application design and implementation. This process provided me with valuable insights into structuring classes, making informed decisions about type usage, effectively handling parameter passing, and correctly utilizing different pointer types. Overall, this experience greatly enhanced my ability to write efficient, clear, and maintainable code. Obviously there is much room for improvement but whole the proccess was very engaging and simply fun for me to learn and understand more.

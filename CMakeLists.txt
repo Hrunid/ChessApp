@@ -31,15 +31,21 @@ FetchContent_Declare(TGUI
 )
 FetchContent_MakeAvailable(TGUI)
 
+add_subdirectory(libs/stockfish)
+set(NNUE OFF CACHE BOOL "Disable NNUE in Stockfish")
+
 file(GLOB SRC
     src/*.cpp
 )
 
+
 add_executable(ChessAppBuildTest ${SRC})
 target_link_libraries(ChessAppBuildTest PRIVATE SFML::Graphics)
 target_link_libraries(ChessAppBuildTest PRIVATE TGUI::TGUI)
+target_link_libraries(ChessAppBuildTest PRIVATE Stockfish)
 
 target_include_directories(ChessAppBuildTest
     PRIVATE
         ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/libs/stockfish
 )

@@ -63,10 +63,7 @@ void App::drawUI(){
             if(int pieceId = game->getSelectedPiece(); pieceId != -1){
                 ui->drawAccessibleSquares((game->getPieceById(pieceId)).getAvailableMoves());
             }
-            /*if(game->getCurrentPlayer().isPlayerInCheck()){
-
-            }*/
-
+            
         }
         else if (gameState == Ended)
         {
@@ -82,5 +79,5 @@ void App::drawUI(){
 }
 
 void App::setAppState(AppState newState){
-    this->state = newState;
+    state = newState;
 }
