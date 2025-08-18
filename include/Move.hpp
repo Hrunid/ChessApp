@@ -19,7 +19,7 @@ class Move{
         bool wasMate;
 
     public:
-        Move(Position to, Position from, char movedPieceSymbol);
+        Move(Position from, Position to, char movedPieceSymbol, bool promotion = false, char newPieceSymb = ' ');
         Position getPositionTo() const;
         Position getPositionFrom() const;
         char getPieceSymbol() const;

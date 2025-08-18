@@ -1,6 +1,8 @@
 #include "King.hpp"
 #include "Board.hpp"
 
+#include <algorithm>
+
 King::King(int id, bool isWhite, Position currentPosition)
     :   Piece(id, 'K', isWhite, currentPosition, { {1, 0}, {-1 ,0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1} })
     {}
@@ -10,14 +12,11 @@ void King::calculateAvailableMoves(){
     availableMoves.clear();
     seenBlockedSquares.clear();
 
-    for(auto [dx, dy] : moveDirections){
-        int x = currentPosition.x;
-        int y = currentPosition.y;
-
-        x += dx;
-        y += dy;
+    for(auto dir : moveDirections){
+        Position tempPosition = currentPosition;
+        tempPosition += dir;
         
-        if(Position tempPosition(x, y); board->isOnBoard(tempPosition)){
+        if(board->isOnBoard(tempPosition)){
             if(isSquareSafe(tempPosition)){
                 if(board->isSquareEmpty(tempPosition)){
                     availableMoves.push_back(tempPosition);
@@ -46,9 +45,6 @@ void King::calculateAvailableMoves(){
         }
 
     }
-
-    
-
 }
 
 void King::findCastleMove(int dx){
@@ -87,13 +83,11 @@ void King::findCastleMove(int dx){
 
 bool King::isSquareSafe(Position pos){
     const std::vector<int>& pieces = board->getSquareAtPosition(pos).getPiecesWithAcces();
-
-    for(int pieceId : pieces){
-        bool tempIsWhite = board->getPieceById(pieceId).isPieceWhite();
-        if(isWhite != tempIsWhite){
-            return false;
-        }
-    }
-    return true;
-
+    return std::all_of(
+        pieces.begin(), 
+        pieces.end(), 
+        [this, pos](int id){
+            Piece& tempPiece = board->getPieceById(id);
+            return tempPiece.isPieceWhite() == isWhite || (tempPiece.getSymbol() == 'P' && (tempPiece.getPosition().x == pos.x));
+        });
 }

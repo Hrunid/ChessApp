@@ -2,43 +2,38 @@
 
 App::App()
     :   window(sf::VideoMode({1280, 720}), "Chess"),
-        game(nullptr),
-        ui(std::make_unique<UI>(window, *this)),
-        state(MainMenu)
+        ui(std::make_unique<UI>(window, *this)),        
+        game(),
+        state(MainMenu),
+        menuDrawn(false)
     {
-        window.setFramerateLimit(144);
+        window.setFramerateLimit(60);
+        ui->drawMenu();
     }
 
 void App::run(){
     while(window.isOpen()){
-        while(auto optEvent = window.pollEvent()){
-            const sf::Event& event = *optEvent;
-            if(event.is<sf::Event::Closed>()){
+        while(const std::optional event = window.pollEvent()){
+            if(event->is<sf::Event::Closed>()){
                 window.close();
             }
-            else if(event.is<sf::Event::Resized>()){
-                ui->onResize(window.getSize());
-            }
             else{
-                ui->handleEvent(event);
+                ui->handleEvent(*event);
             }
         }
-
         window.clear();
         drawUI();
-        startNewGame(TwoPlayers);
-        ui->draw();
         window.display();
     }
-
-    
 }
 
 void App::startNewGame(GameType type){
     setAppState(InGame);
     if(type == TwoPlayers){
-        game = std::make_unique<Game>();
+        game = std::make_unique<Game>(type, *ui);
         ui->setBoardView(game->boardView());
+        ui->setPieceView(game->pieceView());
+        ui->setGamePtr(game.get());
     }
     else if(type == AnalisysMode){
         // new
@@ -62,20 +57,19 @@ void App::drawUI(){
             game->setGameState(Running);
         }
         else if(gameState == Running){
+            ui->showMenu(false);
             ui->drawBoard();
-            ui->drawSidePanel();
+            //ui->drawSidePanel();
             if(int pieceId = game->getSelectedPiece(); pieceId != -1){
                 ui->drawAccessibleSquares((game->getPieceById(pieceId)).getAvailableMoves());
             }
-            /*if(game->getCurrentPlayer().isPlayerInCheck()){
-
-            }*/
-
+            
         }
-        else if (gameState == GameEnded)
+        else if (gameState == Ended)
         {
             ui->drawBoard();
             ui->drawEndGamePanel();
+            ui->showMenu(true);
         }
         
     }
@@ -84,6 +78,6 @@ void App::drawUI(){
     }
 }
 
-void App::setAppState(AppSate newState){
+void App::setAppState(AppState newState){
     state = newState;
 }

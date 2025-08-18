@@ -8,7 +8,7 @@ class Knight : public Piece{
         Knight(int id, bool isWhite, Position currentPosition);
 
         void findMovesInDirection(std::pair<int, int> direction) override;
-        void scanForPin(Position startPosition, int dx, int dy) override;
+        void scanForPin(Position startPosition, std::pair<int, int> dir) override;
 };
 
 #endif

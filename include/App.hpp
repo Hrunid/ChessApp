@@ -7,9 +7,8 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-enum AppSate{
+enum AppState{
     MainMenu,
-        
     InGame,
     Settings
 
@@ -20,7 +19,8 @@ class App{
         sf::RenderWindow window;
         std::unique_ptr<UI> ui;
         std::unique_ptr<Game> game;
-        AppSate state;
+        AppState state;
+        bool menuDrawn;
 
         void drawUI();
 
@@ -28,7 +28,7 @@ class App{
         App();
         void run();
         void startNewGame(GameType type);
-        void setAppState(AppSate newState);
+        void setAppState(AppState newState);
 
 };
 

@@ -1,6 +1,8 @@
 #include "Piece.hpp"
 #include "Board.hpp"
 
+#include <algorithm>
+
 Piece::Piece(int id, char symbol, bool isWhite, Position currentPosition, const std::vector<std::pair<int, int>>& moveDirections)
     :   id(id),
         symbol(symbol), 
@@ -29,6 +31,7 @@ void Piece::calculateAvailableMoves(){
         }
         if(numOfPins >= 2){
             availableMoves.clear();
+            return;
         }
         else if(numOfPins == 1){
             std::pair<int, int> moveDir;
@@ -42,26 +45,17 @@ void Piece::calculateAvailableMoves(){
 
     }
     else{
-        for(std::pair direction : moveDirections){
+        for(const auto& direction : moveDirections){
             findMovesInDirection(direction);
         }
     }
 }
 
 void Piece::findMovesInDirection(std::pair<int, int> direction){
-    int x = currentPosition.x;
-    int y = currentPosition.y;
-
-    int dx = direction.first;
-    int dy = direction.second;
+    Position tempPosition = currentPosition;
 
     while(true){
-
-        x += dx;
-        y += dy;
-        
-        Position tempPosition(x, y);
-
+        tempPosition += direction;
         if(board->isOnBoard(tempPosition)){
             if(board->isSquareEmpty(tempPosition)){
                 availableMoves.push_back(tempPosition);
@@ -69,7 +63,7 @@ void Piece::findMovesInDirection(std::pair<int, int> direction){
             else{
                 int tempPieceId = board->getPieceIdAtPosition(tempPosition);
                 bool tempIsWhite = board->getPieceById(tempPieceId).isPieceWhite();
-                if(tempIsWhite == isWhite){
+                if(tempIsWhite == this->isWhite){
                     seenBlockedSquares.push_back(tempPosition);
                     break;
                 }
@@ -81,7 +75,7 @@ void Piece::findMovesInDirection(std::pair<int, int> direction){
                         break;
                     }
                     if(!isPinning){
-                        scanForPin(tempPosition, dx, dy);
+                        scanForPin(tempPosition, direction);
                     }
                     break;
                     
@@ -95,22 +89,16 @@ void Piece::findMovesInDirection(std::pair<int, int> direction){
     }
 }
 
-void Piece::scanForPin(Position startPosition, int dx, int dy){
-
-    int x = startPosition.x;
-    int y = startPosition.y;
+void Piece::scanForPin(Position startPosition, std::pair<int, int> dir){
+    Position tempPosition = startPosition;
 
     while(true){
-
-        x += dx;
-        y += dy;
-
-        Position tempPosition(x, y);
+        tempPosition += dir;
 
         if(!board->isOnBoard(tempPosition)){
            break;
         }
-        if(!board->isSquareEmpty(tempPosition)){
+        if(!(board->isSquareEmpty(tempPosition))){
 
             int tempPieceId = board->getPieceIdAtPosition(tempPosition);
             bool tempIsWhite = board->getPieceById(tempPieceId).isPieceWhite();
@@ -126,8 +114,8 @@ void Piece::scanForPin(Position startPosition, int dx, int dy){
                     
                     board->getPieceById(pieceToPinId).setPin(true);
                     isPinning = true;
-                    std::pair<int, int> pinningPieceDirection = {dx, dy};
-                    std::pair<int, int> pinnedPieceDirection = {-dx, -dy};
+                    std::pair<int, int> pinningPieceDirection = dir;
+                    std::pair<int, int> pinnedPieceDirection = {-dir.first, -dir.second};
                     Pin newPin = {this->id, pieceToPinId, pinningPieceDirection, pinnedPieceDirection};
                     board->addPin(newPin);
                     board->getPieceById(pieceToPinId).calculateAvailableMoves();
@@ -138,11 +126,7 @@ void Piece::scanForPin(Position startPosition, int dx, int dy){
 
             }
         }
-
-
-
    }
-
 }
 
 void Piece::updateMoves(Position unlockedSquare){
@@ -182,13 +166,8 @@ const std::vector<Position>& Piece::getSeenBlockedSquares() const{
     return seenBlockedSquares;
 }
 
-bool Piece::isMoveAvailable(Position pos){
-    for(auto move : availableMoves){
-        if((pos.x == move.x) && (pos.y == move.y)){
-            return true;
-        }
-    }
-    return false;
+bool Piece::isMoveAvailable(Position pos) const{
+    return std::find(availableMoves.begin(), availableMoves.end(), pos) != availableMoves.end();
 }
 void Piece::setBoardPtr(Board* b){
     board = b;
@@ -217,5 +196,10 @@ void Piece::clearMoves(){
 void Piece::addMove(Position pos){
     availableMoves.push_back(pos);
 }
+void Piece::removeMove(Position pos){
+    availableMoves.erase(std::remove(availableMoves.begin(), availableMoves.end(), pos), availableMoves.end());
+}
 
-
+const std::vector<std::pair<int, int>>& Piece::getMoveDirections() const{
+    return moveDirections;
+}

@@ -32,7 +32,7 @@ class Piece{
         virtual ~Piece() = default;
         
         virtual void calculateAvailableMoves();                                 
-        virtual void scanForPin(Position startPosition, int dx, int dy);        
+        virtual void scanForPin(Position startPosition, std::pair<int, int> dir);        
         virtual void updateMoves(Position unlockedSquare);                      
 
 
@@ -42,9 +42,10 @@ class Piece{
         bool isPieceWhite() const;
         const std::vector<Position>& getAvailableMoves() const;
         const std::vector<Position>& getSeenBlockedSquares() const;
+        const std::vector<std::pair<int, int>>& getMoveDirections() const;
         bool isPiecePinned() const;
         bool hasPieceMoved() const;
-        bool isMoveAvailable(Position pos);
+        bool isMoveAvailable(Position pos) const;
         
         static void setBoardPtr(Board* b);
         void setPosition(Position newPosition);
@@ -53,10 +54,7 @@ class Piece{
         void pieceHasMoved();
         void clearMoves();
         void addMove(Position pos);
-
-        
-
-        
+        void removeMove(Position pos);
 };
 
 #endif

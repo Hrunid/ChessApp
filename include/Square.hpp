@@ -9,7 +9,7 @@ class Square{
         std::vector<int> piecesWithAcces;
 
     public:
-        Square(int currentPiece);
+        Square(int currentPiece = -1);
         
         int getCurrentPieceId() const;
         const std::vector<int>& getPiecesWithAcces() const;
