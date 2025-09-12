@@ -1,7 +1,7 @@
 #ifndef MOVE_H
 #define MOVE_H
 
-#include "Position.hpp"
+#include "Position.h"
 
 #include <string>
 
@@ -42,7 +42,6 @@ class Move{
         std::string convertToPGN();
         std::string convertToUCI();
         
-
 };
 
 #endif

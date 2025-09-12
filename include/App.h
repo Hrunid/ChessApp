@@ -1,8 +1,8 @@
 #ifndef APP_H
 #define APP_H
 
-#include "UI.hpp"
-#include "Game.hpp"
+#include "UI.h"
+#include "Game.h"
 
 #include <SFML/Graphics.hpp>
 #include <memory>

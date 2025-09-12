@@ -3,6 +3,8 @@
 
 #include <string>
 
+enum CastleSide{Long, Short};
+
 struct Position{
     int x;
     int y;
@@ -14,7 +16,8 @@ struct Position{
     std::string convertPositionTo(){
         char x = 'a' + x; 
         char y = '8' + y;
-        std::string s = "";
+        std::string s;
+        s.reserve(2);
         s += x;
         s += y;
         return s;

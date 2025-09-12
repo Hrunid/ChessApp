@@ -1,5 +1,5 @@
-#include "Game.hpp"
-#include "Pawn.hpp"
+#include "Game.h"
+#include "Pawn.h"
 
 Game::Game(GameType type, UI& uiReff)
     :   moveHistory(),
@@ -16,7 +16,7 @@ Game::Game(GameType type, UI& uiReff)
     {
         players[0].setBoardPtr(&board);
         players[1].setBoardPtr(&board);
-        //Stockfish::Bitboard::init();
+
     }
 
 void Game::processClick(Position click){
@@ -45,20 +45,19 @@ void Game::processClick(Position click){
 }
 
 void Game::promote(Position from, Position to, char symb){
-    executeTurn(from, to, true, symb);
+    executeTurn(from, to, std::make_optional(symb));
 }
 
-void Game::executeTurn(Position from, Position to, bool promotion, char symb){
-    Move newMove = createMove(from, to, promotion, symb);
-    moveHistory.push_back(newMove);
+void Game::executeTurn(Position from, Position to, std::optional<char> promPiece){
+    moveHistory.emplace_back(createMove(from, to, promPiece));
     moveCount++;
     currentPlayer = moveCount % 2;
-    board.makeMove(newMove, currentPlayer);
+    board.makeMove(moveHistory.back(), currentPlayer);
     checkGameState();
     selectedPiece = -1;
 }
 
-Move Game::createMove(Position from, Position to, bool promotion, char promPiece){
+Move Game::createMove(Position from, Position to, std::optional<char> promPiece){
     int tempPieceId = board.getPieceIdAtPosition(from);
     char symb = board.getPieceById(tempPieceId).getSymbol();
     Move newMove(from, to, symb);
@@ -69,15 +68,15 @@ Move Game::createMove(Position from, Position to, bool promotion, char promPiece
         newMove.setCastle(true);
     }
     else if(symb == 'P'){
-        if(from.x != to.x && newMove.capture() && board.isSquareEmpty(to)){
+        if(from.x != to.x && board.isSquareEmpty(to)){
             newMove.setEnPassant(true);
         }
-    if(promotion){
-        newMove.setPromotion(promotion);
-        newMove.setPromotionPiece(promPiece);
+    }
+    if(promPiece.has_value()){
+        newMove.setPromotion(true);
+        newMove.setPromotionPiece(*promPiece);
     }
 
-    }
     return newMove;
 }
 
@@ -92,19 +91,17 @@ void Game::checkGameState(){
             players[currentPlayer].applyCheckRestrictions();
             if(!players[currentPlayer].hasPlayerMoves()){
                 moveHistory.back().setMate(true);
+                moveHistory.back().setCheck(false);
                 endGame(Loss);
             }
         }
         else if(players[currentPlayer].hasPlayerMoves()){
-            board.updatePins();
-            if(moveHistory.size() >= 2 && moveHistory[moveHistory.size() - 2].check()){
-                const std::vector<int>& playersPieces = players[currentPlayer].getPiecesId();
-                board.updatePieces(playersPieces);
+            if(moveHistory.size() >= 3 && moveHistory[moveHistory.size() - 3].check()){
+                board.updatePieces(players[currentPlayer].getPiecesId());
             }
-            if(!players[currentPlayer].hasEnoughMaterial()){
+            if(!(players[currentPlayer].hasEnoughMaterial())){
                 endGame(Draw);
             }
-
         }
         else{
             endGame(Draw);
@@ -113,12 +110,7 @@ void Game::checkGameState(){
 }
 
 void Game::endGame(Result res){
-    std::cout<<"Game ended"<<res <<std::endl;
-    ui.setGamePtr(nullptr);
-    ui.showBoard(false);
-    ui.showMenu(true);
-    ui.setPieceView({});
-    ui.setBoardView({});
+
 }
 
 bool Game::threeTimeRepetition(){
@@ -141,7 +133,7 @@ bool Game::threeTimeRepetition(){
 }
 
 bool Game::fiftyMoveRule(){
-    Move tempMove = moveHistory.back();
+    const Move& tempMove = moveHistory.back();
     if(tempMove.capture()) boringMoves = 0;
     else if(tempMove.getPieceSymbol() == 'P') boringMoves = 0;
     else boringMoves++;

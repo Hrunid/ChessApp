@@ -1,5 +1,8 @@
-#include "Queen.hpp"
+#include "Queen.h"
 
 Queen::Queen(int id, bool isWhite, Position currentPosition)
-    :   Piece(id, 'Q', isWhite, currentPosition, { {1, 0}, {-1 ,0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1} })
-        {}
+    :   Piece(id, 'Q', isWhite, currentPosition, moveDirs)
+        {
+            availableMoves.reserve(16);
+            seenBlockedSquares.reserve(8);
+        }

@@ -1,6 +1,6 @@
-#include "UI.hpp"
-#include "App.hpp"
-#include "Game.hpp"
+#include "UI.h"
+#include "App.h"
+#include "Game.h"
 
 #include <iostream>
 
@@ -70,6 +70,7 @@ UI::UI(sf::RenderWindow& wnd, App& app)
                     );
                 boardContainer->add(btn);
                 boardButtons[i][j] = btn;
+                
             }
         }
         boardContainer->setVisible(false);

@@ -1,23 +1,22 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
-#include <vector>
+#include <bitset>
 
 class Square{
     private:
         int currentPiece;                                       
-        std::vector<int> piecesWithAcces;
+        std::bitset<32> piecesWithAcces;
 
     public:
         Square(int currentPiece = -1);
         
         int getCurrentPieceId() const;
-        const std::vector<int>& getPiecesWithAcces() const;
+        std::bitset<32> getPiecesWithAcces() const;
 
         void setCurrentPiece(int newPieceId);
         void removeAttacker(int pieceToRemove);
         void addAttacker(int pieceToAdd);
-
 
 };
 

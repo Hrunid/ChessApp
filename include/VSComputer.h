@@ -1,7 +1,7 @@
 #ifndef VSCOMPUTER_H
 #define VSCOMPUTER_H
 
-#include "Game.hpp"
+#include "Game.h"
 
 class VsComputer : public Game{
     private:
