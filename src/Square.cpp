@@ -1,6 +1,4 @@
-#include "Square.hpp"
-
-#include <algorithm>
+#include "Square.h"
 
 Square::Square(int currentPiece)
     :   currentPiece(currentPiece),
@@ -11,7 +9,7 @@ int Square::getCurrentPieceId() const{
     return currentPiece;
 }
 
-const std::vector<int>& Square::getPiecesWithAcces() const{
+std::bitset<32> Square::getPiecesWithAcces() const{
     return piecesWithAcces;
 }
 
@@ -20,11 +18,11 @@ void Square::setCurrentPiece(int newPieceId){
 }
 
 void Square::removeAttacker(int pieceToRemove){
-    piecesWithAcces.erase(std::remove(piecesWithAcces.begin(), piecesWithAcces.end(), pieceToRemove), piecesWithAcces.end());
+    piecesWithAcces[pieceToRemove] = 0;
 }
 
 void Square::addAttacker(int pieceToAdd){
-    piecesWithAcces.push_back(pieceToAdd);
+    piecesWithAcces[pieceToAdd] = 1;
 }
 
 

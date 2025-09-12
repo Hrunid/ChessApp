@@ -1,4 +1,4 @@
-#include "Move.hpp"
+#include "Move.h"
 
 #include <string>
 
@@ -41,7 +41,8 @@ std::string Move::convertToPGN() {
         else
             return "O-O";
     }
-    std::string PGN = "";
+    std::string PGN;
+    PGN.reserve(3);
     if (pieceSymbol != 'P') {
         PGN.push_back(pieceSymbol);
     } else {

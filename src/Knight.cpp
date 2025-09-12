@@ -1,9 +1,12 @@
-#include "Knight.hpp"
-#include "Board.hpp"
+#include "Knight.h"
+#include "Board.h"
 
 Knight::Knight(int id, bool isWhite, Position currentPosition)
-    :   Piece(id, 'N', isWhite, currentPosition, { {1, 2}, {1, -2}, {2, 1}, {2, -1}, {-1, 2}, {-1, -2}, {-2, 1}, {-2, -1} })
-    {}
+    :   Piece(id, 'N', isWhite, currentPosition, moveDirs)
+    {
+        availableMoves.reserve(8);
+        seenBlockedSquares.reserve(4);
+    }
 
 
 void Knight::findMovesInDirection(std::pair<int, int> direction){
@@ -29,6 +32,6 @@ void Knight::findMovesInDirection(std::pair<int, int> direction){
 
 }
 
-void Knight::scanForPin(Position startPosition, std::pair<int, int> dir){
+void Knight::scanForPin(std::pair<int, int> dir, std::optional<Position> startPosition){
     
 }

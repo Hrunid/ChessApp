@@ -1,18 +1,18 @@
-#include "Board.hpp"
-#include "King.hpp"
-#include "Bishop.hpp"
-#include "Queen.hpp"
-#include "Pawn.hpp"
-#include "Rook.hpp"
-#include "Knight.hpp"
+#include "Board.h"
+#include "King.h"
+#include "Bishop.h"
+#include "Queen.h"
+#include "Pawn.h"
+#include "Rook.h"
+#include "Knight.h"
 
 #include <random>
 #include <limits>
 #include <span>
-#include <iostream>
 #include <optional>
 #include <exception>
 #include <ranges>
+#include <optional>
 
 Board::Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move>& moveHis)
     :   pins(),
@@ -24,13 +24,12 @@ Board::Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move>& 
 {
             
     Piece::setBoardPtr(this);
-
     setUpPieces();
-    for(int i = 0; i < 32; i++){
-        allPieces[i]->calculateAvailableMoves();
-        addPieceToSquares(i);
+    for(int id = 0; id < allPiecesMAX; id++){
+        allPieces[id]->calculateAvailableMoves();
+        addPieceToSquares(id);
     }
-    generateRandNumbers();
+    generateZobristKeys();
 }
 
 Board::~Board(){
@@ -40,7 +39,7 @@ Board::~Board(){
 
 void Board::makeMove(const Move& move, int player){
 
-    const Position from = move.getPositionFrom();
+    Position from = move.getPositionFrom();
     Position to = move.getPositionTo();
 
     int movedPieceId = getPieceIdAtPosition(from);
@@ -49,34 +48,45 @@ void Board::makeMove(const Move& move, int player){
         capture(to);
     }
     else if(move.castle()){
-        tempPositionToUpdate = castle(from, to);
+        tempPositionToUpdate = castle(from, to); 
     }
     else if(move.enPassant()){
-        enPassant(from, to);
+        tempPositionToUpdate = enPassant(from, to);
     }
     if(move.promotion()){
         promotion(movedPieceId, move.getPromotionPieceSymbol());
         tempPositionToUpdate = to;
     }
-    std::vector<int> accessFrom = getSquareAtPosition(from).getPiecesWithAcces();
-    std::vector<int> accessTo = getSquareAtPosition(to).getPiecesWithAcces();
+    std::bitset<32> accessFrom = getSquareAtPosition(from).getPiecesWithAcces();
+    std::bitset<32> accessTo = getSquareAtPosition(to).getPiecesWithAcces();
+
+    std::bitset<32> update = accessFrom | accessTo;
 
     movePiece(from ,to);
     if (tempPositionToUpdate.has_value() && isOnBoard(*tempPositionToUpdate)) {
         updatePiecesAtPosition(*tempPositionToUpdate);
     }
-    
-    updatePieces(accessFrom);
-    updatePieces(accessTo);
+
     Player* p = player == 0 ? whitePlayer : blackPlayer;
-    updatePieces({p->getKingId()});
+    int kingId = p->getKingId();
+
+    updatePieces(update);
+    updatePins();
+
+    auto optPin = p->pinnedOwn(move);
+    if(optPin.has_value()){
+        pins.emplace_back(*optPin);
+    }
+    updatePiece(kingId);
+
 }
 
 void Board::updatePiecesAtPosition(Position pos){
-    const std::vector<int>& piecesWithAccess = getSquareAtPosition(pos).getPiecesWithAcces();
-    Square sq = getSquareAtPosition(pos);
+    Square& sq = getSquareAtPosition(pos);
+    std::bitset<32> piecesWithAccess = sq.getPiecesWithAcces();
+    
     int id = sq.getCurrentPieceId();
-    if(id != -1) updatePieces({id});
+    if(id != -1) piecesWithAccess[id] = 1;
     updatePieces(piecesWithAccess);
 }
 
@@ -98,37 +108,23 @@ int Board::getPieceIdAtPosition(Position pos) const{
     return squares[pos.x][pos.y].getCurrentPieceId();
 }
 
-void Board::updatePieces(const std::vector<int>& piecesToUpdate){
-    for(int pieceId : piecesToUpdate){
-        removePieceFromSquares(pieceId);
-        allPieces[pieceId]->calculateAvailableMoves();
-        addPieceToSquares(pieceId);
-    }
-}
-
 bool Board::isPinCurrent(Pin pin){
-    int pinning = pin.pinningPieceId;
-    int pinned = pin.pinnedPieceId;
-
-    Position tempPosition = getPieceById(pinning).getPosition();
+    
+    int pinningId = pin.pinningPieceId;
+    int pinnedId = pin.pinnedPieceId;
+    Piece& pinning = getPieceById(pinningId);
+    Position tempPosition = pinning.getPosition();
     const std::pair<int, int>& direction = pin.pinningPieceDirection;
 
-    while(true){
-        tempPosition += direction;
-        if(!isOnBoard(tempPosition)){
-            break;
-        }
-        else if(!isSquareEmpty(tempPosition)){
-            
-            if(int tempPieceId = getPieceIdAtPosition(tempPosition); tempPieceId == pinned){
-                return true;
-            }
-            else{
-                return false;
-            }
-        }
-    }
-    return false;
+    int next = nextInDirection(direction, pinning.getPosition());
+    if(next != pinnedId || next == -1) return false;
+    Position newStart = getPieceById(next).getPosition();
+    next = nextInDirection(direction, newStart);
+    if(next == -1) return false;
+    Piece& last = getPieceById(next);
+    if((last.getSymbol() != 'K') || (pinning.isPieceWhite() == last.isPieceWhite())) return false;
+    return true;
+
 }
 
 Square& Board::getSquareAtPosition(Position pos){
@@ -173,7 +169,6 @@ void Board::movePiece(Position from, Position to){
 }
 
 void Board::capture(Position pieceToCapturePosition){
-    try{
         int pieceId = getPieceIdAtPosition(pieceToCapturePosition);
         bool isWhite = getPieceById(pieceId).isPieceWhite();
         if(allPieces[pieceId]->getSymbol() != 'K'){
@@ -190,12 +185,6 @@ void Board::capture(Position pieceToCapturePosition){
         getSquareAtPosition(pieceToCapturePosition).setCurrentPiece(-1);
         removePieceFromSquares(pieceId);
         allPieces[pieceId] = nullptr;
-    }
-    catch (const std::runtime_error& e) {
-        std::cout << "Board::capture(Position pieceToCapturePosition) Error: " << e.what() << std::endl;
-    }
-    
-
 }
 
 void Board::promotion(int id, char type){
@@ -225,49 +214,42 @@ Position Board::castle(Position from, Position to){
 
 Position Board::enPassant(Position from, Position to){
     int xDiff = from.x - to.x;
-    int dx;
-    if(xDiff > 0){
-        dx = -1;
-    }
-    else{
-        dx = 1;
-    }
+    int dx = xDiff > 0 ? -1 : 1;
     Position tempPosition(from.x + dx, from.y);
     capture(tempPosition);
     return tempPosition;
 }
 
-bool Board::canPlayerCastle(bool isWhite, int dx) const{
-    if(isWhite){
-        return whitePlayer->canPlayerCastle(dx);
-    }
-    else{
-        return blackPlayer->canPlayerCastle(dx);
-    }
-}
-
 void Board::updatePins(){
-    for(int i = pins.size() - 1; i >= 0; i--){
-        Pin tempPin = pins[i];
-        if(!allPieces[tempPin.pinningPieceId]){
-            pins.erase(pins.begin() + i);
-            allPieces[tempPin.pinnedPieceId]->setPin(false);
-        }
-        else if(!isPinCurrent(tempPin)){
-            int pinningPieceId = tempPin.pinningPieceId;
-            int pinnedPieceId = tempPin.pinnedPieceId;
+    std::erase_if(pins, [&](Pin pin){
+        int pinningId = pin.pinningPieceId;
+        int pinnedId = pin.pinnedPieceId;
 
-            allPieces[pinningPieceId]->setPinningStatus(false);
-            allPieces[pinnedPieceId]->setPin(false);
-            allPieces[pinnedPieceId]->calculateAvailableMoves();
-
-            pins.erase(pins.begin() + i);
+        if(!(allPieces[pinningId]) && allPieces[pinnedId]){
+            allPieces[pinnedId]->setPin(false);
+            this->updatePiece(pinnedId);
+            return true;
         }
-    }
+        if(!(allPieces[pinnedId]) && allPieces[pinningId]){
+            allPieces[pinningId]->setPinningStatus(false);
+            return true;
+        } 
+        if(!(allPieces[pinningId]) && !(allPieces[pinnedId])){
+            return true;
+        }
+        if(!isPinCurrent(pin)){
+            allPieces[pinningId]->setPinningStatus(false);
+            allPieces[pinnedId]->setPin(false);
+            this->updatePiece(pinnedId);
+            return true;
+        }
+        return false;
+
+    });
 }
 
 void Board::addPin(Pin newPin){
-    pins.push_back(newPin);
+    pins.emplace_back(newPin);
 }
 
 bool Board::isOnBoard(Position pos) const{
@@ -288,7 +270,17 @@ std::pair<int, int> Board::calculateDirection(Position from, Position to) const{
     if(dy != 0){
         dy = dy / std::abs(dy);
     }
-    return std::make_pair(dx, dy);
+    return std::make_pair(dx, dy); 
+}
+
+bool Board::areAligned(Position from, Position to) const{
+    int xDiff = to.x - from.x;
+    int yDiff = to.y - from.y;
+
+    if(xDiff == 0 || yDiff == 0) return true;
+    if(std::abs(xDiff) == std::abs(yDiff)) return true;
+
+    return false;
 }
 
 const std::vector<Pin>& Board::getPins() const{
@@ -296,7 +288,8 @@ const std::vector<Pin>& Board::getPins() const{
 }
 
 std::string Board::convertToFEN(){
-    std::string FEN = "";
+    std::string FEN;
+    FEN.reserve(30);
     int emptySquaresCount;
     for(int i = 0; i < 8; i++){
         emptySquaresCount = 0;
@@ -454,11 +447,9 @@ int Board::getSquareIndexZ(Position pos){
     return (7 - pos.y) * 8 + pos.x;
 }
 
-int Board::getCastleKeyZ(bool isWhite, int dx){
+int Board::getCastleKeyZ(bool isWhite, CastleSide side){
     int color = isWhite ? 0 : 2;
-    int offset;
-    if(dx == 1) offset = 0;
-    else offset = 1;
+    int offset = (side == CastleSide::Short) ? 0 : 1;
     return color + offset;
 }
 
@@ -475,19 +466,19 @@ uint64_t Board::zobristHash(bool isBlackPlayer){
     }
     if(isBlackPlayer){
         hash ^= blackPlayerKey;
-        if(blackPlayer->canPlayerCastle(1)){
-            hash ^= castleKeys[getCastleKeyZ(false, 1)];
+        if(blackPlayer->hasLongCastleRights()){
+            hash ^= castleKeys[getCastleKeyZ(false, CastleSide::Long)];
         }
-        if(blackPlayer->canPlayerCastle(-1)){
-            hash ^= castleKeys[getCastleKeyZ(false, -1)];
+        if(blackPlayer->hasShortCastleRights()){
+            hash ^= castleKeys[getCastleKeyZ(false, CastleSide::Short)];
         }
     }
     else{
-        if(whitePlayer->canPlayerCastle(1)){
-            hash ^= castleKeys[getCastleKeyZ(true, 1)];
+        if(whitePlayer->hasLongCastleRights()){
+            hash ^= castleKeys[getCastleKeyZ(true, CastleSide::Long)];
         }
-        if(whitePlayer->canPlayerCastle(-1)){
-            hash ^= castleKeys[getCastleKeyZ(true, -1)];
+        if(whitePlayer->hasShortCastleRights()){
+            hash ^= castleKeys[getCastleKeyZ(true, CastleSide::Short)];
         }
     }
     int offset = moveHistory.size() % 2 == 1 ? 1 : 16;
@@ -496,11 +487,8 @@ uint64_t Board::zobristHash(bool isBlackPlayer){
         if(!piece) continue;
         if(piece->getSymbol() != 'P') continue;
         Pawn* pawn = dynamic_cast<Pawn*>(piece.get());
-        auto moveDir = std::ranges::subrange(pawn->getMoveDirections().begin() + 1, pawn->getMoveDirections().end());
-        for(auto dir : moveDir){
-            if(int x = pawn->getPosition().x + dir.first; pawn->canEnPassant(dir.first)){
-                hash ^= enPassantKeys[x];
-            }
+        if(pawn->enPassantCol.has_value()){
+            hash ^= enPassantKeys[*(pawn->enPassantCol)];
         }
     }
     return hash;
@@ -515,7 +503,7 @@ void Board::setPlayerPtr(Player* player, bool isWhite){
     }
 }
 
-void Board::generateRandNumbers(){
+void Board::generateZobristKeys(){
     for(int i = 0; i < 12; i++){
         for(int j = 0; j < 64; j++){
             zobristTable[i][j] = random64BitNum();
@@ -551,7 +539,45 @@ const Move* Board::getLastMove() const{
 }
 
 void Board::removePieceFromPosition(int pieceId, Position pos){
-    this->squares[pos.x][pos.y].removeAttacker(pieceId);
+    squares[pos.x][pos.y].removeAttacker(pieceId);
+}
+
+std::optional<std::reference_wrapper<Piece>> Board::getPieceAtPosition(Position pos){
+    if(isSquareEmpty(pos)) return std::nullopt;
+    return *allPieces[getPieceIdAtPosition(pos)];
+}
+
+void Board::updatePiece(int id){
+    removePieceFromSquares(id);
+    allPieces[id]->calculateAvailableMoves();
+    addPieceToSquares(id);
+}
+
+void Board::updatePieces(std::bitset<32> update){
+    for(int id = update._Find_first(); id < update.size(); id = update._Find_next(id)){
+        if(!allPieces[id]) continue;
+        removePieceFromSquares(id);
+        allPieces[id]->calculateAvailableMoves();
+        addPieceToSquares(id);
+    }
+}
+
+int Board::nextInDirection(std::pair<int, int> dir, Position start){
+    while(true){
+        start += dir;
+        if(!isOnBoard(start)) break;
+        if(isSquareEmpty(start)) continue;
+        return getPieceIdAtPosition(start);
+    }
+    return -1;
+}
+
+bool Board::hasPlayerCastleRights(bool isWhite, CastleSide side){
+    Player* p = isWhite ? whitePlayer : blackPlayer;
+    if(side == CastleSide::Short) return p->hasShortCastleRights();
+    if(side == CastleSide::Long) return p->hasLongCastleRights();
+    
+    return false;
 }
 
 

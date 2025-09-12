@@ -1,9 +1,9 @@
 #ifndef UI_H
 #define UI_H
 
-#include "Position.hpp"
-#include "Square.hpp"
-#include "Piece.hpp"
+#include "Position.h"
+#include "Square.h"
+#include "Piece.h"
 
 
 #include <SFML/Graphics.hpp>

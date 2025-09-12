@@ -1,20 +1,18 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "Player.hpp"
-#include "Move.hpp"
-#include "Board.hpp"
-#include "Square.hpp"
-#include "UI.hpp"
+#include "Player.h"
+#include "Move.h"
+#include "Board.h"
+#include "Square.h"
+#include "UI.h"
 
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <array>
-
-#include "uci.h"
-
+#include <optional>
 
 enum Result{
     Draw,
@@ -39,7 +37,7 @@ class Game{
         std::array<Player, 2> players;
         Board board;
         std::vector<Move> moveHistory;
-        std::unordered_map<int, int> positionHistory;
+        std::unordered_map<uint64_t, int> positionHistory;
         int moveCount;
         int selectedPiece;
         int currentPlayer;
@@ -49,11 +47,11 @@ class Game{
         UI& ui;
         //Stockfish::UCIEngine cpu;
         virtual void runStockfish();
-        Move createMove(Position from, Position to, bool promotion = false, char promPiece = '\0');
+        Move createMove(Position from, Position to, std::optional<char> promPiece = std::nullopt);
         Move createMoveFromAiRespone(std::string response);
         void writePosition(std::string fen);
         void pgnToMoves(std::string pgn);      
-        void executeTurn(Position from, Position to, bool promotion = false, char symb = '\0');
+        void executeTurn(Position from, Position to, std::optional<char> promPiece = std::nullopt);
         void checkGameState();
         bool threeTimeRepetition();
         bool fiftyMoveRule();

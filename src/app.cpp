@@ -1,4 +1,4 @@
-#include "App.hpp"
+#include "App.h"
 
 App::App()
     :   window(sf::VideoMode({1280, 720}), "Chess"),

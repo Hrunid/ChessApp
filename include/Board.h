@@ -1,19 +1,21 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "Piece.hpp"
-#include "Square.hpp"
-#include "Player.hpp"
-#include "Position.hpp"
-#include "Pin.hpp"
-#include "Move.hpp"
+#include "Piece.h"
+#include "Square.h"
+#include "Player.h"
+#include "Position.h"
+#include "Pin.h"
+#include "Move.h"
 
 #include <memory>
 #include <vector>
-#include <cstdlib>
+#include <cstdint>
 #include <string>
 #include <span>
 #include <array>
+#include <bitset>
+#include <optional>
 
 class Board{
     private:
@@ -35,7 +37,7 @@ class Board{
         uint64_t random64BitNum();
         int getPieceIndexZ(int pieceId);
         int getSquareIndexZ(Position pos);
-        int getCastleKeyZ(bool isWhite, int dx);                                //Player color & castle direction
+        int getCastleKeyZ(bool isWhite, CastleSide side);                        //Player color & castle direction
         
         bool isPinCurrent(Pin pin);        
         void addPieceToSquares(int pieceId);        
@@ -45,23 +47,27 @@ class Board{
         void capture(Position pieceToCapturePosition);
         void updatePiecesAtPosition(Position pos);
         void movePiece(Position from, Position to);
-        void generateRandNumbers();
+        void generateZobristKeys();
+        void updatePins();
         
-    public:
+    public:        
+        inline static constexpr int allPiecesMAX = 32;
+
         Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move>& moveHis);
         ~Board();
         void setPlayerPtr(Player* player, bool isWhite);
         Piece& getPieceById(int id);
+        std::optional<std::reference_wrapper<Piece>> getPieceAtPosition(Position pos);
         int getPieceIdAtPosition(Position pos) const;
         Square& getSquareAtPosition(Position pos);
         bool isSquareEmpty(Position pos) const; 
         bool isOnBoard(Position pos) const;
-        bool canPlayerCastle(bool isWhite, int dx) const;
         const std::vector<Pin>& getPins() const;
         std::pair<int, int> calculateDirection(Position from, Position to) const;
-        void updatePieces(const std::vector<int>& pieceToUpdate);       
+        bool areAligned(Position from, Position to) const;
+
         void makeMove(const Move& move, int player);
-        void updatePins();
+        
         void addPin(Pin newPin);
         std::string convertToFEN();
         void removePieceFromSquares(int pieceId);
@@ -70,6 +76,12 @@ class Board{
         std::span<const Square> getBoardView() const;
         std::span<const std::unique_ptr<Piece>> getPieceView() const;
         const Move* getLastMove() const;   
- };
+
+
+        void updatePiece(int id);
+        void updatePieces(std::bitset<32> piecesToUpdate);
+        int nextInDirection(std::pair<int, int> dir, Position start);
+        bool hasPlayerCastleRights(bool isWhite, CastleSide side);
+    };
 
 #endif

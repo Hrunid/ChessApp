@@ -1,5 +1,5 @@
 #include <iostream>
-#include "App.hpp"
+#include "App.h"
 
 int main(int argc, char* argv[]) {
     try {

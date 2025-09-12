@@ -1,12 +1,15 @@
 #ifndef PIECE_H
 #define PIECE_H
 
-#include "Position.hpp"
-#include "Pin.hpp"
+#include "Position.h"
+#include "Pin.h"
 
 #include <vector>
 #include <iostream>
 #include <utility>
+#include <optional>
+#include <array>
+#include <span>
 
 class Board;
 
@@ -16,7 +19,7 @@ class Piece{
         const int id;
         const char symbol; 
         const bool isWhite;
-        const std::vector<std::pair<int, int>> moveDirections;
+        std::span<const std::pair<int, int>> moveDirections;
         Position currentPosition;
         bool isPinning;
         bool isPinned;
@@ -27,12 +30,12 @@ class Piece{
         virtual void findMovesInDirection(std::pair<int, int> direction);
 
     public:
-        Piece(int id, char symbol, bool isWhite, Position currentPosition, const std::vector<std::pair<int, int>>& moveDirections);
+        Piece(int id, char symbol, bool isWhite, Position currentPosition, std::span<const std::pair<int, int>> moveDirections);
         
         virtual ~Piece() = default;
         
         virtual void calculateAvailableMoves();                                 
-        virtual void scanForPin(Position startPosition, std::pair<int, int> dir);        
+        virtual void scanForPin(std::pair<int, int> dir, std::optional<Position> startPosition = std::nullopt);        
         virtual void updateMoves(Position unlockedSquare);                      
 
 
@@ -42,7 +45,7 @@ class Piece{
         bool isPieceWhite() const;
         const std::vector<Position>& getAvailableMoves() const;
         const std::vector<Position>& getSeenBlockedSquares() const;
-        const std::vector<std::pair<int, int>>& getMoveDirections() const;
+        std::span<const std::pair<int, int>> getMoveDirections() const;
         bool isPiecePinned() const;
         bool hasPieceMoved() const;
         bool isMoveAvailable(Position pos) const;
@@ -53,6 +56,7 @@ class Piece{
         void setPin(bool pin);
         void pieceHasMoved();
         void clearMoves();
+        void doubleCheck();
         void addMove(Position pos);
         void removeMove(Position pos);
 };
