@@ -13,6 +13,7 @@
 #include <exception>
 #include <ranges>
 #include <optional>
+#include <cassert>
 
 Board::Board(Player* whitePlayer, Player* blackPlayer, const std::vector<Move>& moveHis)
     :   pins(),
@@ -95,12 +96,8 @@ bool Board::isSquareEmpty(Position pos) const{
 }
 
 Piece& Board::getPieceById(int id){
-    if(id < 0 || id > 31){
-        throw std::out_of_range("Error Board::getPieceById() Piece index out of range!\n");
-    }
-    if(!allPieces[id]){
-        throw std::invalid_argument("Error Board::getPieceById() Piece by index " + std::to_string(id) + " does not exist! (nullptr)");
-    }
+    assert(id >= 0 && id <= 31);
+    assert(allPieces[id]);
     return *allPieces[id];
 }
 
@@ -128,14 +125,11 @@ bool Board::isPinCurrent(Pin pin){
 }
 
 Square& Board::getSquareAtPosition(Position pos){
-    if(isOnBoard(pos)){
+    assert(isOnBoard(pos));
         int x = pos.x;
         int y = pos.y;
         return squares[x][y];
-    }
-    else{
-        throw std::invalid_argument("Square array invalid index!");
-    }
+    
 }
 
 void Board::removePieceFromSquares(int pieceId){
@@ -171,17 +165,15 @@ void Board::movePiece(Position from, Position to){
 void Board::capture(Position pieceToCapturePosition){
         int pieceId = getPieceIdAtPosition(pieceToCapturePosition);
         bool isWhite = getPieceById(pieceId).isPieceWhite();
-        if(allPieces[pieceId]->getSymbol() != 'K'){
-            if(isWhite){
-                whitePlayer->removePlayerPiece(pieceId);
-            }
-            else{
-                blackPlayer->removePlayerPiece(pieceId);
-            }
+        assert(allPieces[pieceId]->getSymbol() != 'K');
+
+        if(isWhite){
+            whitePlayer->removePlayerPiece(pieceId);
         }
         else{
-            throw std::invalid_argument("Tried to capture King!");
+            blackPlayer->removePlayerPiece(pieceId);
         }
+        
         getSquareAtPosition(pieceToCapturePosition).setCurrentPiece(-1);
         removePieceFromSquares(pieceId);
         allPieces[pieceId] = nullptr;
@@ -405,7 +397,6 @@ void Board::createPiece(int id, char type, bool isWhite, Position pos){
             allPieces[id] = std::make_unique<Pawn>(id, isWhite, pos);
             break;
         default:
-            throw std::invalid_argument("Incorrect piece symbol!");
             break;
     }
     if(isWhite){

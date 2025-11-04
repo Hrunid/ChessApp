@@ -25,16 +25,11 @@
 using namespace std::chrono_literals;
 
 struct Line{
-
     int depth = 0;
     double evalCp = 0;
     bool isMate = false;
     int mateMoves = 0;
     std::string moves;
-
-    void print() const{
-        std::cout << "Depth: " << depth << " Eval: " << evalCp << " Mate: " << isMate << " Line: " << moves << std::endl;
-    }
 };
 
 class Sf_Wrapper{
@@ -47,10 +42,10 @@ private:
 
     Stockfish::Search::LimitsType lim;
     std::atomic<bool> working;
+    std::thread timer;
 
     std::chrono::time_point<std::chrono::steady_clock> search_start;
     std::atomic<bool> clock_working;
-
 
     int max_threads;
     int max_RAM;
@@ -126,7 +121,8 @@ public:
         lines(1),
         desiredDepth(20),
         lim(),
-        working(false)
+        working(false),
+        timer()
     {
         setUsedRAM(128);
         setUsedThreads(1);
@@ -214,7 +210,7 @@ public:
             sf.go(limits);
         }
 
-        std::thread timer{[&](int ms){
+        timer = std::thread{[&](int ms){
             clock_working = true;
             search_start = std::chrono::steady_clock::now();
             auto end = search_start + std::chrono::milliseconds{ms};

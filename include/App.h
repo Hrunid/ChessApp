@@ -3,7 +3,9 @@
 
 #include "UI.h"
 #include "Game.h"
+#include "ResourceManager.h"
 
+#include <filesystem>
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -15,20 +17,28 @@ enum AppState{
 };
 
 class App{
-    private:
-        sf::RenderWindow window;
-        std::unique_ptr<UI> ui;
-        std::unique_ptr<Game> game;
-        AppState state;
-        bool menuDrawn;
+private:
+    int argc;
+    char** argv;
+    std::filesystem::path exePath;
 
-        void drawUI();
+    sf::RenderWindow window;
+    tgui::Gui tgui;    
+    resources::ResourceManager resManager;       
+    UI ui;
+ 
+    std::unique_ptr<Game> game;
+    AppState state;
+    bool menuDrawn;
 
-    public:
-        App();
-        void run();
-        void startNewGame(GameType type);
-        void setAppState(AppState newState);
+    std::filesystem::path setPath();
+    void drawUI();
+
+public:
+    App(int _argc, char* _argv[]);
+    void run();
+    void startNewGame(GameType type);
+    void setAppState(AppState newState);
 
 };
 

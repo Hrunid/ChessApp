@@ -55,6 +55,10 @@ class Game{
         void checkGameState();
         bool threeTimeRepetition();
         bool fiftyMoveRule();
+
+        void setSelected(int newSel);
+        void makeMove();
+
     public:
         Game(GameType type, UI& uiReff);
         virtual ~Game() = default;
