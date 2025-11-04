@@ -25,4 +25,8 @@ void Square::addAttacker(int pieceToAdd){
     piecesWithAcces[pieceToAdd] = 1;
 }
 
+bool Square::empty() const{
+    return currentPiece == -1;
+}
+
 

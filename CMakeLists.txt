@@ -39,7 +39,7 @@ file(GLOB SRC
 )
 
 
-add_executable(ChessAppBuildTest ${SRC})
+add_executable(ChessAppBuildTest WIN32 ${SRC})
 target_link_libraries(ChessAppBuildTest PRIVATE SFML::Graphics)
 target_link_libraries(ChessAppBuildTest PRIVATE TGUI::TGUI)
 target_link_libraries(ChessAppBuildTest PRIVATE Stockfish)

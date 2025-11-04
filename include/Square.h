@@ -13,10 +13,11 @@ class Square{
         
         int getCurrentPieceId() const;
         std::bitset<32> getPiecesWithAcces() const;
-
+        bool empty() const;
         void setCurrentPiece(int newPieceId);
         void removeAttacker(int pieceToRemove);
         void addAttacker(int pieceToAdd);
+        
 
 };
 

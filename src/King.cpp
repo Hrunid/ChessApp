@@ -21,10 +21,10 @@ void King::calculateAvailableMoves(){
         Position tempPosition = currentPosition;
         tempPosition += dir;
         
-        if(!board->isOnBoard(tempPosition)) break;
+        if(!board->isOnBoard(tempPosition)) continue;;
         if(!isSquareSafe(tempPosition)){
             seenBlockedSquares.emplace_back(tempPosition);
-            break;
+            continue;
         }
 
         auto pieceAtPos = board->getPieceAtPosition(tempPosition);

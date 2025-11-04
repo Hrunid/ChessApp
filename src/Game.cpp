@@ -20,28 +20,38 @@ Game::Game(GameType type, UI& uiReff)
     }
 
 void Game::processClick(Position click){
-    int pieceAtClick = board.getPieceIdAtPosition(click);
-    bool clickedEmpty = board.isSquareEmpty(click);
-    bool clickedOwnPiece = !(clickedEmpty) &&  board.getPieceById(pieceAtClick).isPieceWhite() == players[currentPlayer].isPlayerWhite();
-    if(selectedPiece != -1){
-        Piece& selected = board.getPieceById(selectedPiece);
-        bool tempIsWhite = selected.isPieceWhite();
-        if(selected.isMoveAvailable(click)){
-            Position from = selected.getPosition();
-            if(selected.getSymbol() == 'P'){
-                int promRow = selected.isPieceWhite() ? 0 : 7;
-                if(int promRow = tempIsWhite ? 0 : 7; click.y == promRow){
-                    ui.drawPromotionOptions(from, click);
-                    return;
-                }
-            }
-            executeTurn(from, click);
-            return;
-        }
-        selectedPiece = clickedOwnPiece ? pieceAtClick : -1;
-        return;
+    auto optPieceAtClick = board.getPieceAtPosition(click);
+    Piece* pieceAtClick = nullptr;
+
+    if(optPieceAtClick.has_value()){
+        pieceAtClick = &optPieceAtClick->get();
     }
-    selectedPiece = clickedOwnPiece ? pieceAtClick : -1;
+
+    bool clickedOwn = pieceAtClick && (pieceAtClick->isPieceWhite() == players[currentPlayer].isPlayerWhite());
+
+    if(clickedOwn){
+        setSelected(pieceAtClick->getId());
+    }
+    else if(selectedPiece != -1){
+        Piece& selectedRef = board.getPieceById(selectedPiece);
+        if(!selectedRef.isMoveAvailable(click)){
+            setSelected(-1);
+        }
+        else if(selectedRef.getSymbol() == 'P' && click.y == (selectedRef.isPieceWhite() ? 0 : 7)){
+            ui.drawPromotionOptions(selectedRef.getPosition(), click);
+        }
+        else{
+            executeTurn(selectedRef.getPosition(), click);
+        }
+    }
+    else{
+        setSelected(-1);
+    }
+}
+
+void Game::makeMove(){
+    board.makeMove(moveHistory.back(), currentPlayer);
+    ui.drawBoard();
 }
 
 void Game::promote(Position from, Position to, char symb){
@@ -52,9 +62,10 @@ void Game::executeTurn(Position from, Position to, std::optional<char> promPiece
     moveHistory.emplace_back(createMove(from, to, promPiece));
     moveCount++;
     currentPlayer = moveCount % 2;
-    board.makeMove(moveHistory.back(), currentPlayer);
+    setSelected(-1);
+    makeMove();
     checkGameState();
-    selectedPiece = -1;
+    
 }
 
 Move Game::createMove(Position from, Position to, std::optional<char> promPiece){
@@ -110,7 +121,11 @@ void Game::checkGameState(){
 }
 
 void Game::endGame(Result res){
-
+    std::string r;
+    if(res == Draw) r = "Game enden in a draw!";
+    else if(currentPlayer == 0) r = "Black player won!";
+    else r = "White player won!";
+    ui.drawEndGamePanel(r, currentPlayer);
 }
 
 bool Game::threeTimeRepetition(){
@@ -177,6 +192,12 @@ std::span<const Square> Game::boardView() const{
 
 std::span<const std::unique_ptr<Piece>> Game::pieceView() const{
     return board.getPieceView();
+}
+
+void Game::setSelected(int newSel){
+    if(selectedPiece != -1) ui.hideMoves(board.getPieceById(selectedPiece).getAvailableMoves());
+    if(newSel != -1) ui.drawMoves(board.getPieceById(newSel).getAvailableMoves());
+    selectedPiece = newSel;
 }
 
 

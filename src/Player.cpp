@@ -93,7 +93,6 @@ void Player::applyCheckRestrictions(){
         for(size_t id = piecesId._Find_first(); id < Board::allPiecesMAX; id = piecesId._Find_next(id)){
             board->getPieceById(id).doubleCheck();
         }
-        board->updatePiece(kingId);
     }
     else if(numOfChecks == 1){
         Position kingPosition = board->getPieceById(kingId).getPosition();
@@ -119,8 +118,9 @@ void Player::applyCheckRestrictions(){
                 }
             }
         }
-        board->updatePiece(kingId);
+        
     }
+    board->updatePiece(kingId);
 }
 
 std::vector<Position> Player::getCheckLine(Position start, Position end, char aSymb) const{
